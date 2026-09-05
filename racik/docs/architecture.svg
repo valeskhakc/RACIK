@@ -1,0 +1,233 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9.5" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#111111"/>
+    </marker>
+    <style>
+      .box   { fill:#FDF6BA; stroke:#111111; stroke-width:2.5; }
+      .chip  { stroke:#111111; stroke-width:1.6; stroke-dasharray:4 3; }
+      .grp   { fill:#FDF6BA; stroke:#111111; stroke-width:2.5; stroke-dasharray:7 5; }
+      .sub   { fill:#FDF6BA; stroke:#111111; stroke-width:2; stroke-dasharray:5 4; }
+      .flow  { stroke:#111111; stroke-width:3; fill:none; marker-end:url(#arrow); }
+      .t     { fill:#111111; }
+      .lbl   { fill:#111111; font-size:17px; }
+      .cap   { fill:#111111; font-size:18px; font-weight:bold; }
+      .note  { fill:#3f3f46; font-size:13px; }
+      .bul   { fill:#111111; font-size:13px; }
+      .ln    { stroke:#1E3A8A; stroke-width:2.5; stroke-linecap:round; }
+      .blue  { fill:none; stroke:#2563EB; stroke-width:3.5; stroke-linejoin:round; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#FFFFFF"/>
+  <text x="800" y="78" class="t" font-size="42" font-weight="bold" text-anchor="middle">Architecture</text>
+
+  <!-- ================= SPPG operator ================= -->
+  <g>
+    <circle cx="105" cy="178" r="33" fill="#F58220"/>
+    <path d="M56,268 C56,214 154,214 154,268 Z" fill="#F58220"/>
+    <text x="105" y="299" class="lbl" text-anchor="middle">SPPG Operator</text>
+  </g>
+
+  <!-- operator -> RACIK -->
+  <text x="288" y="196" class="lbl" text-anchor="middle">Bahasa Indonesia</text>
+  <text x="288" y="219" class="lbl" text-anchor="middle">(jenjang · porsi · pagu)</text>
+  <line x1="172" y1="240" x2="392" y2="240" class="flow"/>
+
+  <rect x="400" y="199" width="168" height="82" class="box"/>
+  <text x="484" y="232" class="t" font-size="25" font-weight="bold" text-anchor="middle">RACIK</text>
+  <text x="484" y="258" class="t" font-size="12.5" text-anchor="middle">SEA-LION orchestrator</text>
+
+  <!-- SEA-LION model, feeding the orchestrator box -->
+  <g transform="translate(447,80)">
+    <rect x="0" y="0" width="74" height="52" rx="9" fill="#DBEAFE" stroke="#2563EB" stroke-width="3"/>
+    <circle cx="24" cy="21" r="5" fill="#2563EB"/><circle cx="50" cy="21" r="5" fill="#2563EB"/>
+    <path d="M22,35 q15,11 30,0" fill="none" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/>
+    <path d="M14,0 v-9 M60,0 v-9" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="14" cy="-12" r="4" fill="#2563EB"/><circle cx="60" cy="-12" r="4" fill="#2563EB"/>
+  </g>
+  <text x="484" y="152" class="cap" font-size="14" text-anchor="middle">SEA-LION v4.5</text>
+  <text x="484" y="171" class="note" font-size="11.5" text-anchor="middle">Qwen-27B-IT · function calling</text>
+
+  <!-- RACIK -> candidate filter -->
+  <text x="722" y="196" class="lbl" text-anchor="middle">Request Accessing</text>
+  <text x="722" y="219" class="lbl" text-anchor="middle">Food &amp; Recipe Data</text>
+  <line x1="574" y1="240" x2="866" y2="240" class="flow"/>
+
+  <rect x="872" y="199" width="212" height="82" class="box"/>
+  <text x="978" y="226" class="t" font-size="19" font-weight="bold" text-anchor="middle">Candidate Filter</text>
+  <text x="978" y="246" class="note" font-size="11.5" text-anchor="middle">G1–G5 gerbang keras</text>
+  <text x="978" y="262" class="note" font-size="11.5" text-anchor="middle">skor: gizi/rupiah ×</text>
+  <text x="978" y="275" class="note" font-size="11.5" text-anchor="middle">daerah × mutu data</text>
+
+  <!-- ================= recipe corpus (top right) ================= -->
+  <g>
+    <g transform="translate(1198,150)">
+      <rect x="0" y="0" width="56" height="46" rx="4" fill="#DBEAFE" stroke="#1E3A8A" stroke-width="2.5"/>
+      <rect x="0" y="0" width="15" height="46" rx="4" fill="#1E3A8A"/>
+      <line x1="24" y1="14" x2="47" y2="14" class="ln"/><line x1="24" y1="24" x2="47" y2="24" class="ln"/>
+      <line x1="24" y1="34" x2="39" y2="34" class="ln"/>
+    </g>
+    <g transform="translate(1300,150)">
+      <rect x="0" y="0" width="56" height="46" rx="4" fill="#DBEAFE" stroke="#1E3A8A" stroke-width="2.5"/>
+      <rect x="0" y="0" width="15" height="46" rx="4" fill="#1E3A8A"/>
+      <line x1="24" y1="14" x2="47" y2="14" class="ln"/><line x1="24" y1="24" x2="47" y2="24" class="ln"/>
+      <line x1="24" y1="34" x2="39" y2="34" class="ln"/>
+    </g>
+    <g transform="translate(1249,212)">
+      <rect x="0" y="0" width="56" height="46" rx="4" fill="#DBEAFE" stroke="#1E3A8A" stroke-width="2.5"/>
+      <rect x="0" y="0" width="15" height="46" rx="4" fill="#1E3A8A"/>
+      <line x1="24" y1="14" x2="47" y2="14" class="ln"/><line x1="24" y1="24" x2="47" y2="24" class="ln"/>
+      <line x1="24" y1="34" x2="39" y2="34" class="ln"/>
+    </g>
+    <text x="1281" y="292" class="cap" text-anchor="middle">Regional Recipe Corpus</text>
+    <text x="1281" y="311" class="note" text-anchor="middle">SUMBER · 18.133 resep mentah · 34 provinsi</text>
+  </g>
+
+  <!-- enrichment: the source corpus is transformed, not merely renamed -->
+  <line x1="1281" y1="326" x2="1281" y2="404" class="flow"/>
+  <text x="1268" y="345" class="note" font-size="12" text-anchor="end">URT → gram</text>
+  <text x="1268" y="362" class="note" font-size="12" text-anchor="end">TKPI + BDD</text>
+  <text x="1268" y="379" class="note" font-size="12" text-anchor="end">harga Rp/kg</text>
+  <text x="1268" y="396" class="note" font-size="12" text-anchor="end">klasifikasi slot</text>
+
+  <!-- ================= costed dish index (by tray slot) ================= -->
+  <rect x="1100" y="410" width="362" height="104" class="box"/>
+  <text x="1281" y="437" class="t" font-size="18" font-weight="bold" text-anchor="middle">Costed Dish Index</text>
+  <text x="1281" y="454" class="note" font-size="11" text-anchor="middle">18.008 hidangan berbiaya, per slot nampan</text>
+  <g text-anchor="middle" class="t">
+    <rect x="1107" y="462" width="66" height="42" class="chip" fill="#B7E4C7"/>
+    <text x="1140" y="478" font-size="10">hewani</text><text x="1140" y="494" font-size="11" font-weight="bold">13.525</text>
+    <rect x="1177" y="462" width="66" height="42" class="chip" fill="#B7E4C7"/>
+    <text x="1210" y="478" font-size="10">nabati</text><text x="1210" y="494" font-size="11" font-weight="bold">3.051</text>
+    <rect x="1247" y="462" width="66" height="42" class="chip" fill="#B7E4C7"/>
+    <text x="1280" y="478" font-size="10">sayur</text><text x="1280" y="494" font-size="11" font-weight="bold">826</text>
+    <rect x="1317" y="462" width="66" height="42" class="chip" fill="#F8C8CE"/>
+    <text x="1350" y="478" font-size="10">pokok</text><text x="1350" y="494" font-size="11" font-weight="bold">429</text>
+    <rect x="1387" y="462" width="66" height="42" class="chip" fill="#F8C8CE"/>
+    <text x="1420" y="478" font-size="10">buah</text><text x="1420" y="494" font-size="11" font-weight="bold">177</text>
+  </g>
+
+  <!-- costed index -> engine -->
+  <line x1="1094" y1="462" x2="1058" y2="462" class="flow"/>
+
+  <!-- ================= nutrition & cost engine ================= -->
+  <g transform="translate(922,404)">
+    <rect x="0" y="0" width="122" height="88" rx="7" class="blue" fill="#FFFFFF"/>
+    <rect x="14" y="15" width="41" height="55" rx="3" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+    <line x1="21" y1="27" x2="48" y2="27" class="ln" stroke="#2563EB"/>
+    <line x1="21" y1="38" x2="48" y2="38" class="ln" stroke="#2563EB"/>
+    <line x1="21" y1="49" x2="41" y2="49" class="ln" stroke="#2563EB"/>
+    <rect x="63" y="15" width="41" height="55" rx="3" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+    <line x1="70" y1="27" x2="97" y2="27" class="ln" stroke="#2563EB"/>
+    <line x1="70" y1="38" x2="97" y2="38" class="ln" stroke="#2563EB"/>
+    <path d="M52,88 V101 M70,88 V101" class="blue" stroke-width="3"/>
+    <line x1="40" y1="103" x2="82" y2="103" stroke="#2563EB" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="100" cy="74" r="25" fill="#FFFFFF" class="blue"/>
+    <rect x="89" y="63" width="22" height="24" rx="2" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+    <line x1="119" y1="93" x2="131" y2="105" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <text x="983" y="540" class="cap" text-anchor="middle">Racik Nutrition &amp;</text>
+  <text x="983" y="562" class="cap" text-anchor="middle">Cost Engine</text>
+
+  <!-- engine -> menu plan -->
+  <text x="783" y="418" class="lbl" text-anchor="middle">Generating Menu</text>
+  <text x="783" y="441" class="lbl" text-anchor="middle">under CP-SAT</text>
+  <line x1="912" y1="466" x2="668" y2="466" class="flow"/>
+
+  <!-- ================= menu plan ================= -->
+  <rect x="404" y="424" width="258" height="92" class="box"/>
+  <text x="533" y="452" class="t" font-size="19" font-weight="bold" text-anchor="middle">Menu Plan</text>
+  <g font-size="10.5" text-anchor="middle" class="t">
+    <rect x="414" y="464" width="47" height="38" class="chip" fill="#B7E4C7"/><text x="437.5" y="488">Pokok</text>
+    <rect x="465" y="464" width="47" height="38" class="chip" fill="#B7E4C7"/><text x="488.5" y="488">Hewani</text>
+    <rect x="516" y="464" width="47" height="38" class="chip" fill="#B7E4C7"/><text x="539.5" y="488">Nabati</text>
+    <rect x="567" y="464" width="42" height="38" class="chip" fill="#F8C8CE"/><text x="588" y="488">Sayur</text>
+    <rect x="613" y="464" width="40" height="38" class="chip" fill="#F8C8CE"/><text x="633" y="488">Buah</text>
+  </g>
+
+  <!-- menu plan -> report -->
+  <line x1="533" y1="522" x2="533" y2="596" class="flow"/>
+  <text x="556" y="566" class="lbl">Compliance Analysis</text>
+
+  <!-- ================= compliance & procurement report ================= -->
+  <g transform="translate(533,678)">
+    <circle cx="0" cy="0" r="76" fill="none" stroke="#93C5FD" stroke-width="2.5" stroke-dasharray="7 7"/>
+    <rect x="-36" y="-46" width="72" height="92" rx="7" fill="#DBEAFE" stroke="#2563EB" stroke-width="3"/>
+    <rect x="-15" y="-55" width="30" height="16" rx="4" fill="#2563EB"/>
+    <path d="M-24,-20 l7,7 l14,-14" fill="none" stroke="#2563EB" stroke-width="3.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="6" y1="-16" x2="26" y2="-16" class="ln" stroke="#2563EB"/>
+    <path d="M-24,6 l7,7 l14,-14" fill="none" stroke="#2563EB" stroke-width="3.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="6" y1="10" x2="26" y2="10" class="ln" stroke="#2563EB"/>
+    <path d="M-24,32 l7,7 l14,-14" fill="none" stroke="#2563EB" stroke-width="3.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="6" y1="36" x2="26" y2="36" class="ln" stroke="#2563EB"/>
+    <circle cx="-62" cy="-34" r="15" fill="#BFDBFE" stroke="#2563EB" stroke-width="2.5"/>
+    <text x="-62" y="-29" font-size="14" font-weight="bold" fill="#1E3A8A" text-anchor="middle">Rp</text>
+    <circle cx="62" cy="40" r="15" fill="#BFDBFE" stroke="#2563EB" stroke-width="2.5"/>
+    <path d="M56,40 q6,-11 12,-6 q-2,10 -12,6 z" fill="#2563EB"/>
+    <circle cx="60" cy="-46" r="13" fill="#BFDBFE" stroke="#2563EB" stroke-width="2.5"/>
+    <path d="M55,-46 l4,4 l7,-8" fill="none" stroke="#2563EB" stroke-width="2.8"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="533" y="792" class="cap" text-anchor="middle">Racik Compliance &amp;</text>
+  <text x="533" y="814" class="cap" text-anchor="middle">Procurement Report</text>
+
+  <!-- ================= database ================= -->
+  <g transform="translate(925,642)">
+    <path d="M0,14 V72 a56,15 0 0 0 112,0 V14" fill="#FFFFFF" class="blue"/>
+    <ellipse cx="56" cy="14" rx="56" ry="15" fill="#FFFFFF" class="blue"/>
+    <path d="M0,33 a56,15 0 0 0 112,0" fill="none" stroke="#2563EB" stroke-width="2.5"/>
+    <path d="M0,53 a56,15 0 0 0 112,0" fill="none" stroke="#2563EB" stroke-width="2.5"/>
+  </g>
+  <text x="981" y="762" class="cap" text-anchor="middle">racik.db</text>
+  <text x="981" y="783" class="note" text-anchor="middle">18.008 hidangan · 258rb baris bahan</text>
+
+  <!-- database -> report -->
+  <text x="790" y="656" class="lbl" text-anchor="middle">Nutrition &amp;</text>
+  <text x="790" y="679" class="lbl" text-anchor="middle">Cost Facts</text>
+  <line x1="919" y1="700" x2="640" y2="700" class="flow"/>
+
+  <!-- data sources -> database -->
+  <line x1="1112" y1="700" x2="1046" y2="700" class="flow"/>
+
+  <!-- ================= data sources ================= -->
+  <rect x="1118" y="552" width="420" height="256" class="grp"/>
+
+  <rect x="1196" y="570" width="316" height="98" class="sub"/>
+  <text x="1354" y="594" class="t" font-size="15" font-weight="bold" text-anchor="middle">Reference Standards</text>
+  <text x="1214" y="618" class="bul">• AKG 2019 (Permenkes 28/2019)</text>
+  <text x="1214" y="638" class="bul">• Isi Piringku (Permenkes 41/2014)</text>
+  <text x="1214" y="658" class="bul">• MBG Rp10.000/porsi (BGN)</text>
+
+  <rect x="1130" y="684" width="196" height="110" class="sub"/>
+  <text x="1228" y="708" class="t" font-size="15" font-weight="bold" text-anchor="middle">Composition</text>
+  <text x="1144" y="732" class="bul">• TKPI 2020</text>
+  <text x="1144" y="752" class="bul">• 1.146 bahan pangan</text>
+  <text x="1144" y="772" class="bul">• BDD + 22 zat gizi</text>
+
+  <rect x="1338" y="684" width="188" height="110" class="sub"/>
+  <text x="1432" y="708" class="t" font-size="15" font-weight="bold" text-anchor="middle">Price Data</text>
+  <text x="1352" y="732" class="bul">• Bapanas snapshot</text>
+  <text x="1352" y="752" class="bul">• BI PIHPS</text>
+  <text x="1352" y="772" class="bul">• Indeks kemahalan</text>
+
+  <text x="1328" y="838" class="lbl" text-anchor="middle">Food &amp; Price Data Source</text>
+
+  <!-- ================= feedback loops to the operator ================= -->
+  <!-- menu plan -> operator : choosing the menu -->
+  <path d="M400,455 C300,430 170,400 118,322" class="flow"/>
+  <text x="300" y="381" class="lbl" text-anchor="middle">Choosing Menu</text>
+
+  <!-- report -> operator : answers -->
+  <path d="M452,706 C260,760 100,700 96,330" class="flow"/>
+
+  <!-- operator -> report : questions -->
+  <path d="M70,336 C40,640 120,800 440,752" class="flow"/>
+  <text x="170" y="548" class="lbl">Asking why a dish was</text>
+  <text x="170" y="571" class="lbl">chosen, how to raise AKG</text>
+  <text x="170" y="594" class="lbl">adequacy, what to buy</text>
+</svg>

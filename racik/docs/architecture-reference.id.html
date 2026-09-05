@@ -1,0 +1,963 @@
+<title>Referensi Arsitektur Racik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+/* ============================================================
+   Token warna diwarisi dari ui/index.html agar dokumen ini berada
+   dalam sistem yang sama dengan aplikasi yang dijelaskannya.
+   Netralnya condong hijau, bukan abu-abu datar.
+   ============================================================ */
+:root{
+  --paper:#F7F3E8;
+  --surface:#FFFFFF;
+  --sunk:#EFE9D8;
+  --ink:#1F2B22;
+  --ink-soft:#4A5A4C;
+  --ink-faint:#6E7D70;
+  --leaf:#3F6B4F;
+  --leaf-deep:#2C4C38;
+  --gold:#E8A33D;
+  --gold-wash:#FDF6BA;
+  --gold-ink:#6B4E14;
+  --chili:#C0392B;
+  --chili-wash:#F6DCD8;
+  --line:#DCD4BC;
+  --line-soft:#E8E1CC;
+  --rail:rgba(63,107,79,.10);
+  --plate:#F7F3E8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12160F;
+    --surface:#1A1F16;
+    --sunk:#222819;
+    --ink:#E9E5D6;
+    --ink-soft:#B4BCAC;
+    --ink-faint:#8A9384;
+    --leaf:#86B597;
+    --leaf-deep:#A9CFB6;
+    --gold:#F0B65C;
+    --gold-wash:#2E2A16;
+    --gold-ink:#F0D8A0;
+    --chili:#E4796B;
+    --chili-wash:#33201D;
+    --line:#333A2C;
+    --line-soft:#2A3123;
+    --rail:rgba(134,181,151,.12);
+    --plate:#E8E4D6;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12160F;
+  --surface:#1A1F16;
+  --sunk:#222819;
+  --ink:#E9E5D6;
+  --ink-soft:#B4BCAC;
+  --ink-faint:#8A9384;
+  --leaf:#86B597;
+  --leaf-deep:#A9CFB6;
+  --gold:#F0B65C;
+  --gold-wash:#2E2A16;
+  --gold-ink:#F0D8A0;
+  --chili:#E4796B;
+  --chili-wash:#33201D;
+  --line:#333A2C;
+  --line-soft:#2A3123;
+  --rail:rgba(134,181,151,.12);
+  --plate:#E8E4D6;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:2rem;}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important;}
+}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0;text-wrap:balance;letter-spacing:-.012em;}
+code,.mono,th,td.num{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;}
+a{color:var(--leaf);text-underline-offset:3px;}
+:focus-visible{outline:2.5px solid var(--gold);outline-offset:3px;border-radius:2px;}
+
+/* ---------------- shell ---------------- */
+.wrap{max-width:1220px;margin:0 auto;padding:0 clamp(18px,4vw,40px) 100px;}
+.layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:clamp(28px,5vw,60px);align-items:start;}
+@media (max-width:940px){.layout{grid-template-columns:1fr;}}
+
+/* ---------------- masthead ---------------- */
+.mast{padding:clamp(38px,7vw,72px) 0 30px;border-bottom:2px solid var(--ink);}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--leaf);
+}
+.mast h1{font-size:clamp(38px,6.6vw,66px);line-height:1.02;margin:14px 0 0;}
+.mast h1 em{font-style:normal;color:var(--leaf);}
+.mast .standfirst{
+  font-size:clamp(16px,2vw,18.5px);color:var(--ink-soft);
+  max-width:64ch;margin:18px 0 0;
+}
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));
+  gap:1px;background:var(--line);border:1px solid var(--line);margin-top:34px;
+}
+.stat{background:var(--paper);padding:13px 15px;}
+.stat b{
+  display:block;font-family:'JetBrains Mono',monospace;font-size:21px;
+  font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+}
+.stat span{display:block;font-size:11.5px;color:var(--ink-faint);margin-top:2px;line-height:1.35;}
+
+/* ---------------- contents rail ---------------- */
+nav.toc{position:sticky;top:26px;font-size:13px;}
+@media (max-width:940px){
+  nav.toc{position:static;margin:26px 0 8px;padding-bottom:18px;border-bottom:1px solid var(--line);}
+}
+nav.toc .lbl{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  padding-bottom:9px;display:block;
+}
+nav.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;}
+@media (max-width:940px){nav.toc ol{flex-direction:row;flex-wrap:wrap;gap:6px;}}
+nav.toc a{
+  display:block;padding:5px 0 5px 11px;color:var(--ink-soft);
+  text-decoration:none;border-left:2px solid var(--line);
+}
+nav.toc a:hover{color:var(--leaf);border-left-color:var(--leaf);background:var(--rail);}
+@media (max-width:940px){
+  nav.toc a{border:1px solid var(--line);border-radius:2px;padding:4px 9px;}
+}
+nav.toc .n{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint);
+  margin-right:7px;
+}
+
+/* ---------------- sections ---------------- */
+section{padding-top:46px;}
+section > h2{
+  font-size:clamp(24px,3.2vw,31px);line-height:1.14;
+  padding-bottom:11px;border-bottom:1px solid var(--ink);
+}
+.sec-n{
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+  color:var(--leaf);letter-spacing:.05em;margin-right:12px;
+}
+section > p{max-width:72ch;color:var(--ink-soft);}
+section > p.lede{color:var(--ink);font-size:17px;}
+h3{font-size:19px;margin:32px 0 8px;}
+h4{font-size:15.5px;margin:22px 0 6px;}
+
+/* ---------------- the diagram plate ---------------- */
+figure{margin:26px 0 8px;}
+.plate{
+  background:var(--plate);border:1.5px solid var(--line);
+  padding:14px;overflow-x:auto;
+}
+.plate img{display:block;width:100%;min-width:760px;height:auto;}
+figcaption{
+  font-size:12.5px;color:var(--ink-faint);margin-top:10px;max-width:72ch;
+}
+
+/* ---------------- boxes: echo the diagram's idiom ----------------
+   Sharp corners + hairline border + pale wash, so the document reads
+   as part of the same drawing as architecture.svg.                  */
+.spec{
+  background:var(--gold-wash);border:1.5px solid var(--gold);
+  padding:15px 17px;margin:22px 0;color:var(--gold-ink);font-size:14.5px;
+}
+.spec b{color:var(--gold-ink);}
+.warn{
+  background:var(--chili-wash);border-left:3px solid var(--chili);
+  padding:13px 16px;margin:20px 0;font-size:14.5px;
+}
+.rule{
+  border:1.5px solid var(--ink);background:var(--surface);
+  padding:17px 19px;margin:24px 0;
+}
+.rule .k{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--leaf);
+}
+.rule p{margin:7px 0 0;font-size:15px;}
+
+/* ---------------- module cards ---------------- */
+.mods{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px;}
+.mod{background:var(--surface);padding:16px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;}
+.mod .path{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--leaf-deep);}
+.mod .loc{
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-faint);
+  font-variant-numeric:tabular-nums;white-space:nowrap;align-self:start;padding-top:3px;
+}
+.mod .what{grid-column:1/-1;font-size:14.5px;color:var(--ink-soft);margin-top:2px;}
+.mod .surf{grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin-top:7px;line-height:1.7;word-break:break-word;}
+.mod .why{grid-column:1/-1;font-size:13.5px;margin-top:9px;padding-left:11px;border-left:2px solid var(--gold);color:var(--ink);}
+
+/* ---------------- pipeline (a real sequence, so numbered) ---------------- */
+.pipe{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px;}
+.step{background:var(--surface);padding:15px 18px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:14px;}
+.step .i{
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+  color:var(--surface);background:var(--leaf);width:26px;height:26px;
+  display:grid;place-items:center;
+}
+.step h4{margin:0 0 3px;font-size:16px;}
+.step p{margin:0;font-size:14px;color:var(--ink-soft);}
+.step code{font-size:12.5px;color:var(--leaf-deep);}
+
+/* ---------------- tables ---------------- */
+.tw{overflow-x:auto;margin:20px 0;border:1px solid var(--line);}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:520px;background:var(--surface);}
+th{
+  text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-faint);padding:10px 13px;
+  border-bottom:1.5px solid var(--line);background:var(--sunk);white-space:nowrap;
+}
+td{padding:9px 13px;border-bottom:1px solid var(--line-soft);vertical-align:top;}
+tbody tr:last-child td{border-bottom:none;}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+td.k{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--leaf-deep);white-space:nowrap;}
+tbody tr:hover td{background:var(--rail);}
+.tag{
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;
+  font-weight:700;letter-spacing:.06em;padding:2px 7px;border:1px solid currentColor;
+}
+.tag.get{color:var(--leaf);}
+.tag.post{color:var(--gold-ink);background:var(--gold-wash);border-color:var(--gold);}
+.ok{color:var(--leaf);font-weight:600;}
+.bad{color:var(--chili);font-weight:600;}
+
+ul.tight{margin:12px 0;padding-left:20px;max-width:72ch;color:var(--ink-soft);}
+ul.tight li{margin-bottom:7px;}
+ul.tight li b,ul.tight li strong{color:var(--ink);}
+
+pre{
+  background:var(--surface);border:1px solid var(--line);padding:14px 16px;
+  overflow-x:auto;font-size:12.5px;line-height:1.7;margin:18px 0;
+}
+pre code{color:var(--ink);}
+p code,li code,td code{
+  background:var(--sunk);padding:1.5px 5px;font-size:.88em;border:1px solid var(--line-soft);
+}
+
+.foot{
+  margin-top:60px;padding-top:22px;border-top:2px solid var(--ink);
+  font-size:13px;color:var(--ink-faint);max-width:72ch;
+}
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div class="eyebrow">Referensi teknis · internal</div>
+    <h1>Arsitektur <em>Racik</em></h1>
+    <p class="standfirst">
+      Perencana menu berbasis AKG dengan batasan biaya untuk program Makan Bergizi
+      Gratis. 18.133 resep daerah menjadi hidangan berbiaya dan bergizi; pemrograman
+      bilangan bulat memilih menunya; SEA-LION menangani bahasanya. Dikirim dalam
+      Bahasa Indonesia dan Inggris dari satu basis kode. Ini peta cara kerjanya —
+      dan di mana ia lemah.
+    </p>
+    <div class="stats">
+      <div class="stat"><b>16</b><span>modul Python</span></div>
+      <div class="stat"><b>6.820</b><span>baris Python</span></div>
+      <div class="stat"><b>137</b><span>pengujian, semua lulus</span></div>
+      <div class="stat"><b>18.008</b><span>hidangan berbiaya</span></div>
+      <div class="stat"><b>257.887</b><span>baris bahan teraudit</span></div>
+      <div class="stat"><b>1.149</b><span>catatan pangan TKPI</span></div>
+      <div class="stat"><b>2</b><span>bahasa, satu basis kode</span></div>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <nav class="toc">
+      <span class="lbl">Isi</span>
+      <ol>
+        <li><a href="#overview"><span class="n">01</span>Sistem</a></li>
+        <li><a href="#lifecycle"><span class="n">02</span>Jalur permintaan</a></li>
+        <li><a href="#pipeline"><span class="n">03</span>Alur pembangunan</a></li>
+        <li><a href="#modules"><span class="n">04</span>Modul</a></li>
+        <li><a href="#data"><span class="n">05</span>Model data</a></li>
+        <li><a href="#api"><span class="n">06</span>API HTTP</a></li>
+        <li><a href="#orchestrator"><span class="n">07</span>Orkestrator</a></li>
+        <li><a href="#rubric"><span class="n">7b</span>Rubrik kandidat</a></li>
+        <li><a href="#deliverable"><span class="n">7c</span>Laporan &amp; terjemahan</a></li>
+        <li><a href="#constants"><span class="n">08</span>Konstanta kebijakan</a></li>
+        <li><a href="#results"><span class="n">09</span>Hasil terukur</a></li>
+        <li><a href="#tests"><span class="n">10</span>Pengujian</a></li>
+        <li><a href="#limits"><span class="n">11</span>Keterbatasan</a></li>
+        <li><a href="#bilingual"><span class="n">12</span>Build dwibahasa</a></li>
+        <li><a href="#runbook"><span class="n">13</span>Panduan jalan</a></li>
+      </ol>
+    </nav>
+
+    <main>
+
+      <!-- ============ 01 ============ -->
+      <section id="overview">
+        <h2><span class="sec-n">01</span>Sistem</h2>
+        <p class="lede">
+          Racik punya satu komitmen arsitektural, dan semua hal lain mengikutinya:
+          <strong>mesin deterministik memiliki setiap angka, dan model bahasa tidak memiliki satu pun.</strong>
+        </p>
+        <p>
+          Operator SPPG menulis dalam Bahasa Indonesia biasa. SEA-LION membaca maksudnya
+          dan memutuskan alat mana yang dipanggil. Alat-alat itu menjalankan optimasi
+          CP-SAT atas korpus hidangan yang gizinya berasal dari TKPI 2020 dan biayanya
+          dari tabel bahan berharga. Jawaban dirakit dari keluaran alat, dan setiap
+          respons membawa jejak pemanggilan yang menghasilkannya.
+        </p>
+
+        <figure>
+          <div class="plate">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAwIDkwMCIgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiI+CiAgPGRlZnM+CiAgICA8bWFya2VyIGlkPSJhcnJvdyIgdmlld0JveD0iMCAwIDEwIDEwIiByZWZYPSI5LjUiIHJlZlk9IjUiCiAgICAgICAgICAgIG1hcmtlcldpZHRoPSI3IiBtYXJrZXJIZWlnaHQ9IjciIG9yaWVudD0iYXV0by1zdGFydC1yZXZlcnNlIj4KICAgICAgPHBhdGggZD0iTTAsMCBMMTAsNSBMMCwxMCB6IiBmaWxsPSIjMTExMTExIi8+CiAgICA8L21hcmtlcj4KICAgIDxzdHlsZT4KICAgICAgLmJveCAgIHsgZmlsbDojRkRGNkJBOyBzdHJva2U6IzExMTExMTsgc3Ryb2tlLXdpZHRoOjIuNTsgfQogICAgICAuY2hpcCAgeyBzdHJva2U6IzExMTExMTsgc3Ryb2tlLXdpZHRoOjEuNjsgc3Ryb2tlLWRhc2hhcnJheTo0IDM7IH0KICAgICAgLmdycCAgIHsgZmlsbDojRkRGNkJBOyBzdHJva2U6IzExMTExMTsgc3Ryb2tlLXdpZHRoOjIuNTsgc3Ryb2tlLWRhc2hhcnJheTo3IDU7IH0KICAgICAgLnN1YiAgIHsgZmlsbDojRkRGNkJBOyBzdHJva2U6IzExMTExMTsgc3Ryb2tlLXdpZHRoOjI7IHN0cm9rZS1kYXNoYXJyYXk6NSA0OyB9CiAgICAgIC5mbG93ICB7IHN0cm9rZTojMTExMTExOyBzdHJva2Utd2lkdGg6MzsgZmlsbDpub25lOyBtYXJrZXItZW5kOnVybCgjYXJyb3cpOyB9CiAgICAgIC50ICAgICB7IGZpbGw6IzExMTExMTsgfQogICAgICAubGJsICAgeyBmaWxsOiMxMTExMTE7IGZvbnQtc2l6ZToxN3B4OyB9CiAgICAgIC5jYXAgICB7IGZpbGw6IzExMTExMTsgZm9udC1zaXplOjE4cHg7IGZvbnQtd2VpZ2h0OmJvbGQ7IH0KICAgICAgLm5vdGUgIHsgZmlsbDojM2YzZjQ2OyBmb250LXNpemU6MTNweDsgfQogICAgICAuYnVsICAgeyBmaWxsOiMxMTExMTE7IGZvbnQtc2l6ZToxM3B4OyB9CiAgICAgIC5sbiAgICB7IHN0cm9rZTojMUUzQThBOyBzdHJva2Utd2lkdGg6Mi41OyBzdHJva2UtbGluZWNhcDpyb3VuZDsgfQogICAgICAuYmx1ZSAgeyBmaWxsOm5vbmU7IHN0cm9rZTojMjU2M0VCOyBzdHJva2Utd2lkdGg6My41OyBzdHJva2UtbGluZWpvaW46cm91bmQ7IH0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgoKICA8cmVjdCB3aWR0aD0iMTYwMCIgaGVpZ2h0PSI5MDAiIGZpbGw9IiNGRkZGRkYiLz4KICA8dGV4dCB4PSI4MDAiIHk9Ijc4IiBjbGFzcz0idCIgZm9udC1zaXplPSI0MiIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFyY2hpdGVjdHVyZTwvdGV4dD4KCiAgPCEtLSA9PT09PT09PT09PT09PT09PSBTUFBHIG9wZXJhdG9yID09PT09PT09PT09PT09PT09IC0tPgogIDxnPgogICAgPGNpcmNsZSBjeD0iMTA1IiBjeT0iMTc4IiByPSIzMyIgZmlsbD0iI0Y1ODIyMCIvPgogICAgPHBhdGggZD0iTTU2LDI2OCBDNTYsMjE0IDE1NCwyMTQgMTU0LDI2OCBaIiBmaWxsPSIjRjU4MjIwIi8+CiAgICA8dGV4dCB4PSIxMDUiIHk9IjI5OSIgY2xhc3M9ImxibCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U1BQRyBPcGVyYXRvcjwvdGV4dD4KICA8L2c+CgogIDwhLS0gb3BlcmF0b3IgLT4gUkFDSUsgLS0+CiAgPHRleHQgeD0iMjg4IiB5PSIxOTYiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkJhaGFzYSBJbmRvbmVzaWE8L3RleHQ+CiAgPHRleHQgeD0iMjg4IiB5PSIyMTkiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPihqZW5qYW5nIMK3IHBvcnNpIMK3IHBhZ3UpPC90ZXh0PgogIDxsaW5lIHgxPSIxNzIiIHkxPSIyNDAiIHgyPSIzOTIiIHkyPSIyNDAiIGNsYXNzPSJmbG93Ii8+CgogIDxyZWN0IHg9IjQwMCIgeT0iMTk5IiB3aWR0aD0iMTY4IiBoZWlnaHQ9IjgyIiBjbGFzcz0iYm94Ii8+CiAgPHRleHQgeD0iNDg0IiB5PSIyMzIiIGNsYXNzPSJ0IiBmb250LXNpemU9IjI1IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UkFDSUs8L3RleHQ+CiAgPHRleHQgeD0iNDg0IiB5PSIyNTgiIGNsYXNzPSJ0IiBmb250LXNpemU9IjEyLjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNFQS1MSU9OIG9yY2hlc3RyYXRvcjwvdGV4dD4KCiAgPCEtLSBTRUEtTElPTiBtb2RlbCwgZmVlZGluZyB0aGUgb3JjaGVzdHJhdG9yIGJveCAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0NDcsODApIj4KICAgIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI3NCIgaGVpZ2h0PSI1MiIgcng9IjkiIGZpbGw9IiNEQkVBRkUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgICA8Y2lyY2xlIGN4PSIyNCIgY3k9IjIxIiByPSI1IiBmaWxsPSIjMjU2M0VCIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSIyMSIgcj0iNSIgZmlsbD0iIzI1NjNFQiIvPgogICAgPHBhdGggZD0iTTIyLDM1IHExNSwxMSAzMCwwIiBmaWxsPSJub25lIiBzdHJva2U9IiMyNTYzRUIiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNMTQsMCB2LTkgTTYwLDAgdi05IiBzdHJva2U9IiMyNTYzRUIiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8Y2lyY2xlIGN4PSIxNCIgY3k9Ii0xMiIgcj0iNCIgZmlsbD0iIzI1NjNFQiIvPjxjaXJjbGUgY3g9IjYwIiBjeT0iLTEyIiByPSI0IiBmaWxsPSIjMjU2M0VCIi8+CiAgPC9nPgogIDx0ZXh0IHg9IjQ4NCIgeT0iMTUyIiBjbGFzcz0iY2FwIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TRUEtTElPTiB2NC41PC90ZXh0PgogIDx0ZXh0IHg9IjQ4NCIgeT0iMTcxIiBjbGFzcz0ibm90ZSIgZm9udC1zaXplPSIxMS41IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Rd2VuLTI3Qi1JVCDCtyBmdW5jdGlvbiBjYWxsaW5nPC90ZXh0PgoKICA8IS0tIFJBQ0lLIC0+IGNhbmRpZGF0ZSBmaWx0ZXIgLS0+CiAgPHRleHQgeD0iNzIyIiB5PSIxOTYiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJlcXVlc3QgQWNjZXNzaW5nPC90ZXh0PgogIDx0ZXh0IHg9IjcyMiIgeT0iMjE5IiBjbGFzcz0ibGJsIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Gb29kICZhbXA7IFJlY2lwZSBEYXRhPC90ZXh0PgogIDxsaW5lIHgxPSI1NzQiIHkxPSIyNDAiIHgyPSI4NjYiIHkyPSIyNDAiIGNsYXNzPSJmbG93Ii8+CgogIDxyZWN0IHg9Ijg3MiIgeT0iMTk5IiB3aWR0aD0iMjEyIiBoZWlnaHQ9IjgyIiBjbGFzcz0iYm94Ii8+CiAgPHRleHQgeD0iOTc4IiB5PSIyMjYiIGNsYXNzPSJ0IiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q2FuZGlkYXRlIEZpbHRlcjwvdGV4dD4KICA8dGV4dCB4PSI5NzgiIHk9IjI0NiIgY2xhc3M9Im5vdGUiIGZvbnQtc2l6ZT0iMTEuNSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RzHigJNHNSBnZXJiYW5nIGtlcmFzPC90ZXh0PgogIDx0ZXh0IHg9Ijk3OCIgeT0iMjYyIiBjbGFzcz0ibm90ZSIgZm9udC1zaXplPSIxMS41IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5za29yOiBnaXppL3J1cGlhaCDDlzwvdGV4dD4KICA8dGV4dCB4PSI5NzgiIHk9IjI3NSIgY2xhc3M9Im5vdGUiIGZvbnQtc2l6ZT0iMTEuNSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+ZGFlcmFoIMOXIG11dHUgZGF0YTwvdGV4dD4KCiAgPCEtLSA9PT09PT09PT09PT09PT09PSByZWNpcGUgY29ycHVzICh0b3AgcmlnaHQpID09PT09PT09PT09PT09PT09IC0tPgogIDxnPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTE5OCwxNTApIj4KICAgICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjU2IiBoZWlnaHQ9IjQ2IiByeD0iNCIgZmlsbD0iI0RCRUFGRSIgc3Ryb2tlPSIjMUUzQThBIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogICAgICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTUiIGhlaWdodD0iNDYiIHJ4PSI0IiBmaWxsPSIjMUUzQThBIi8+CiAgICAgIDxsaW5lIHgxPSIyNCIgeTE9IjE0IiB4Mj0iNDciIHkyPSIxNCIgY2xhc3M9ImxuIi8+PGxpbmUgeDE9IjI0IiB5MT0iMjQiIHgyPSI0NyIgeTI9IjI0IiBjbGFzcz0ibG4iLz4KICAgICAgPGxpbmUgeDE9IjI0IiB5MT0iMzQiIHgyPSIzOSIgeTI9IjM0IiBjbGFzcz0ibG4iLz4KICAgIDwvZz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzMDAsMTUwKSI+CiAgICAgIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0NiIgcng9IjQiIGZpbGw9IiNEQkVBRkUiIHN0cm9rZT0iIzFFM0E4QSIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICAgICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjE1IiBoZWlnaHQ9IjQ2IiByeD0iNCIgZmlsbD0iIzFFM0E4QSIvPgogICAgICA8bGluZSB4MT0iMjQiIHkxPSIxNCIgeDI9IjQ3IiB5Mj0iMTQiIGNsYXNzPSJsbiIvPjxsaW5lIHgxPSIyNCIgeTE9IjI0IiB4Mj0iNDciIHkyPSIyNCIgY2xhc3M9ImxuIi8+CiAgICAgIDxsaW5lIHgxPSIyNCIgeTE9IjM0IiB4Mj0iMzkiIHkyPSIzNCIgY2xhc3M9ImxuIi8+CiAgICA8L2c+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMjQ5LDIxMikiPgogICAgICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNTYiIGhlaWdodD0iNDYiIHJ4PSI0IiBmaWxsPSIjREJFQUZFIiBzdHJva2U9IiMxRTNBOEEiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgICAgIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxNSIgaGVpZ2h0PSI0NiIgcng9IjQiIGZpbGw9IiMxRTNBOEEiLz4KICAgICAgPGxpbmUgeDE9IjI0IiB5MT0iMTQiIHgyPSI0NyIgeTI9IjE0IiBjbGFzcz0ibG4iLz48bGluZSB4MT0iMjQiIHkxPSIyNCIgeDI9IjQ3IiB5Mj0iMjQiIGNsYXNzPSJsbiIvPgogICAgICA8bGluZSB4MT0iMjQiIHkxPSIzNCIgeDI9IjM5IiB5Mj0iMzQiIGNsYXNzPSJsbiIvPgogICAgPC9nPgogICAgPHRleHQgeD0iMTI4MSIgeT0iMjkyIiBjbGFzcz0iY2FwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5SZWdpb25hbCBSZWNpcGUgQ29ycHVzPC90ZXh0PgogICAgPHRleHQgeD0iMTI4MSIgeT0iMzExIiBjbGFzcz0ibm90ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U1VNQkVSIMK3IDE4LjEzMyByZXNlcCBtZW50YWggwrcgMzQgcHJvdmluc2k8L3RleHQ+CiAgPC9nPgoKICA8IS0tIGVucmljaG1lbnQ6IHRoZSBzb3VyY2UgY29ycHVzIGlzIHRyYW5zZm9ybWVkLCBub3QgbWVyZWx5IHJlbmFtZWQgLS0+CiAgPGxpbmUgeDE9IjEyODEiIHkxPSIzMjYiIHgyPSIxMjgxIiB5Mj0iNDA0IiBjbGFzcz0iZmxvdyIvPgogIDx0ZXh0IHg9IjEyNjgiIHk9IjM0NSIgY2xhc3M9Im5vdGUiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJlbmQiPlVSVCDihpIgZ3JhbTwvdGV4dD4KICA8dGV4dCB4PSIxMjY4IiB5PSIzNjIiIGNsYXNzPSJub3RlIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0iZW5kIj5US1BJICsgQkREPC90ZXh0PgogIDx0ZXh0IHg9IjEyNjgiIHk9IjM3OSIgY2xhc3M9Im5vdGUiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJlbmQiPmhhcmdhIFJwL2tnPC90ZXh0PgogIDx0ZXh0IHg9IjEyNjgiIHk9IjM5NiIgY2xhc3M9Im5vdGUiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJlbmQiPmtsYXNpZmlrYXNpIHNsb3Q8L3RleHQ+CgogIDwhLS0gPT09PT09PT09PT09PT09PT0gY29zdGVkIGRpc2ggaW5kZXggKGJ5IHRyYXkgc2xvdCkgPT09PT09PT09PT09PT09PT0gLS0+CiAgPHJlY3QgeD0iMTEwMCIgeT0iNDEwIiB3aWR0aD0iMzYyIiBoZWlnaHQ9IjEwNCIgY2xhc3M9ImJveCIvPgogIDx0ZXh0IHg9IjEyODEiIHk9IjQzNyIgY2xhc3M9InQiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Db3N0ZWQgRGlzaCBJbmRleDwvdGV4dD4KICA8dGV4dCB4PSIxMjgxIiB5PSI0NTQiIGNsYXNzPSJub3RlIiBmb250LXNpemU9IjExIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xOC4wMDggaGlkYW5nYW4gYmVyYmlheWEsIHBlciBzbG90IG5hbXBhbjwvdGV4dD4KICA8ZyB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idCI+CiAgICA8cmVjdCB4PSIxMTA3IiB5PSI0NjIiIHdpZHRoPSI2NiIgaGVpZ2h0PSI0MiIgY2xhc3M9ImNoaXAiIGZpbGw9IiNCN0U0QzciLz4KICAgIDx0ZXh0IHg9IjExNDAiIHk9IjQ3OCIgZm9udC1zaXplPSIxMCI+aGV3YW5pPC90ZXh0Pjx0ZXh0IHg9IjExNDAiIHk9IjQ5NCIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9ImJvbGQiPjEzLjUyNTwvdGV4dD4KICAgIDxyZWN0IHg9IjExNzciIHk9IjQ2MiIgd2lkdGg9IjY2IiBoZWlnaHQ9IjQyIiBjbGFzcz0iY2hpcCIgZmlsbD0iI0I3RTRDNyIvPgogICAgPHRleHQgeD0iMTIxMCIgeT0iNDc4IiBmb250LXNpemU9IjEwIj5uYWJhdGk8L3RleHQ+PHRleHQgeD0iMTIxMCIgeT0iNDk0IiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCI+My4wNTE8L3RleHQ+CiAgICA8cmVjdCB4PSIxMjQ3IiB5PSI0NjIiIHdpZHRoPSI2NiIgaGVpZ2h0PSI0MiIgY2xhc3M9ImNoaXAiIGZpbGw9IiNCN0U0QzciLz4KICAgIDx0ZXh0IHg9IjEyODAiIHk9IjQ3OCIgZm9udC1zaXplPSIxMCI+c2F5dXI8L3RleHQ+PHRleHQgeD0iMTI4MCIgeT0iNDk0IiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCI+ODI2PC90ZXh0PgogICAgPHJlY3QgeD0iMTMxNyIgeT0iNDYyIiB3aWR0aD0iNjYiIGhlaWdodD0iNDIiIGNsYXNzPSJjaGlwIiBmaWxsPSIjRjhDOENFIi8+CiAgICA8dGV4dCB4PSIxMzUwIiB5PSI0NzgiIGZvbnQtc2l6ZT0iMTAiPnBva29rPC90ZXh0Pjx0ZXh0IHg9IjEzNTAiIHk9IjQ5NCIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9ImJvbGQiPjQyOTwvdGV4dD4KICAgIDxyZWN0IHg9IjEzODciIHk9IjQ2MiIgd2lkdGg9IjY2IiBoZWlnaHQ9IjQyIiBjbGFzcz0iY2hpcCIgZmlsbD0iI0Y4QzhDRSIvPgogICAgPHRleHQgeD0iMTQyMCIgeT0iNDc4IiBmb250LXNpemU9IjEwIj5idWFoPC90ZXh0Pjx0ZXh0IHg9IjE0MjAiIHk9IjQ5NCIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9ImJvbGQiPjE3NzwvdGV4dD4KICA8L2c+CgogIDwhLS0gY29zdGVkIGluZGV4IC0+IGVuZ2luZSAtLT4KICA8bGluZSB4MT0iMTA5NCIgeTE9IjQ2MiIgeDI9IjEwNTgiIHkyPSI0NjIiIGNsYXNzPSJmbG93Ii8+CgogIDwhLS0gPT09PT09PT09PT09PT09PT0gbnV0cml0aW9uICYgY29zdCBlbmdpbmUgPT09PT09PT09PT09PT09PT0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTIyLDQwNCkiPgogICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEyMiIgaGVpZ2h0PSI4OCIgcng9IjciIGNsYXNzPSJibHVlIiBmaWxsPSIjRkZGRkZGIi8+CiAgICA8cmVjdCB4PSIxNCIgeT0iMTUiIHdpZHRoPSI0MSIgaGVpZ2h0PSI1NSIgcng9IjMiIGZpbGw9IiNEQkVBRkUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICA8bGluZSB4MT0iMjEiIHkxPSIyNyIgeDI9IjQ4IiB5Mj0iMjciIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8bGluZSB4MT0iMjEiIHkxPSIzOCIgeDI9IjQ4IiB5Mj0iMzgiIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8bGluZSB4MT0iMjEiIHkxPSI0OSIgeDI9IjQxIiB5Mj0iNDkiIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8cmVjdCB4PSI2MyIgeT0iMTUiIHdpZHRoPSI0MSIgaGVpZ2h0PSI1NSIgcng9IjMiIGZpbGw9IiNEQkVBRkUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICA8bGluZSB4MT0iNzAiIHkxPSIyNyIgeDI9Ijk3IiB5Mj0iMjciIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8bGluZSB4MT0iNzAiIHkxPSIzOCIgeDI9Ijk3IiB5Mj0iMzgiIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8cGF0aCBkPSJNNTIsODggVjEwMSBNNzAsODggVjEwMSIgY2xhc3M9ImJsdWUiIHN0cm9rZS13aWR0aD0iMyIvPgogICAgPGxpbmUgeDE9IjQwIiB5MT0iMTAzIiB4Mj0iODIiIHkyPSIxMDMiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxjaXJjbGUgY3g9IjEwMCIgY3k9Ijc0IiByPSIyNSIgZmlsbD0iI0ZGRkZGRiIgY2xhc3M9ImJsdWUiLz4KICAgIDxyZWN0IHg9Ijg5IiB5PSI2MyIgd2lkdGg9IjIyIiBoZWlnaHQ9IjI0IiByeD0iMiIgZmlsbD0iI0RCRUFGRSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjIiLz4KICAgIDxsaW5lIHgxPSIxMTkiIHkxPSI5MyIgeDI9IjEzMSIgeTI9IjEwNSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDwvZz4KICA8dGV4dCB4PSI5ODMiIHk9IjU0MCIgY2xhc3M9ImNhcCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UmFjaWsgTnV0cml0aW9uICZhbXA7PC90ZXh0PgogIDx0ZXh0IHg9Ijk4MyIgeT0iNTYyIiBjbGFzcz0iY2FwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Db3N0IEVuZ2luZTwvdGV4dD4KCiAgPCEtLSBlbmdpbmUgLT4gbWVudSBwbGFuIC0tPgogIDx0ZXh0IHg9Ijc4MyIgeT0iNDE4IiBjbGFzcz0ibGJsIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5HZW5lcmF0aW5nIE1lbnU8L3RleHQ+CiAgPHRleHQgeD0iNzgzIiB5PSI0NDEiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPnVuZGVyIENQLVNBVDwvdGV4dD4KICA8bGluZSB4MT0iOTEyIiB5MT0iNDY2IiB4Mj0iNjY4IiB5Mj0iNDY2IiBjbGFzcz0iZmxvdyIvPgoKICA8IS0tID09PT09PT09PT09PT09PT09IG1lbnUgcGxhbiA9PT09PT09PT09PT09PT09PSAtLT4KICA8cmVjdCB4PSI0MDQiIHk9IjQyNCIgd2lkdGg9IjI1OCIgaGVpZ2h0PSI5MiIgY2xhc3M9ImJveCIvPgogIDx0ZXh0IHg9IjUzMyIgeT0iNDUyIiBjbGFzcz0idCIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1lbnUgUGxhbjwvdGV4dD4KICA8ZyBmb250LXNpemU9IjEwLjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ0Ij4KICAgIDxyZWN0IHg9IjQxNCIgeT0iNDY0IiB3aWR0aD0iNDciIGhlaWdodD0iMzgiIGNsYXNzPSJjaGlwIiBmaWxsPSIjQjdFNEM3Ii8+PHRleHQgeD0iNDM3LjUiIHk9IjQ4OCI+UG9rb2s8L3RleHQ+CiAgICA8cmVjdCB4PSI0NjUiIHk9IjQ2NCIgd2lkdGg9IjQ3IiBoZWlnaHQ9IjM4IiBjbGFzcz0iY2hpcCIgZmlsbD0iI0I3RTRDNyIvPjx0ZXh0IHg9IjQ4OC41IiB5PSI0ODgiPkhld2FuaTwvdGV4dD4KICAgIDxyZWN0IHg9IjUxNiIgeT0iNDY0IiB3aWR0aD0iNDciIGhlaWdodD0iMzgiIGNsYXNzPSJjaGlwIiBmaWxsPSIjQjdFNEM3Ii8+PHRleHQgeD0iNTM5LjUiIHk9IjQ4OCI+TmFiYXRpPC90ZXh0PgogICAgPHJlY3QgeD0iNTY3IiB5PSI0NjQiIHdpZHRoPSI0MiIgaGVpZ2h0PSIzOCIgY2xhc3M9ImNoaXAiIGZpbGw9IiNGOEM4Q0UiLz48dGV4dCB4PSI1ODgiIHk9IjQ4OCI+U2F5dXI8L3RleHQ+CiAgICA8cmVjdCB4PSI2MTMiIHk9IjQ2NCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjM4IiBjbGFzcz0iY2hpcCIgZmlsbD0iI0Y4QzhDRSIvPjx0ZXh0IHg9IjYzMyIgeT0iNDg4Ij5CdWFoPC90ZXh0PgogIDwvZz4KCiAgPCEtLSBtZW51IHBsYW4gLT4gcmVwb3J0IC0tPgogIDxsaW5lIHgxPSI1MzMiIHkxPSI1MjIiIHgyPSI1MzMiIHkyPSI1OTYiIGNsYXNzPSJmbG93Ii8+CiAgPHRleHQgeD0iNTU2IiB5PSI1NjYiIGNsYXNzPSJsYmwiPkNvbXBsaWFuY2UgQW5hbHlzaXM8L3RleHQ+CgogIDwhLS0gPT09PT09PT09PT09PT09PT0gY29tcGxpYW5jZSAmIHByb2N1cmVtZW50IHJlcG9ydCA9PT09PT09PT09PT09PT09PSAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1MzMsNjc4KSI+CiAgICA8Y2lyY2xlIGN4PSIwIiBjeT0iMCIgcj0iNzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzkzQzVGRCIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1kYXNoYXJyYXk9IjcgNyIvPgogICAgPHJlY3QgeD0iLTM2IiB5PSItNDYiIHdpZHRoPSI3MiIgaGVpZ2h0PSI5MiIgcng9IjciIGZpbGw9IiNEQkVBRkUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgICA8cmVjdCB4PSItMTUiIHk9Ii01NSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzI1NjNFQiIvPgogICAgPHBhdGggZD0iTS0yNCwtMjAgbDcsNyBsMTQsLTE0IiBmaWxsPSJub25lIiBzdHJva2U9IiMyNTYzRUIiIHN0cm9rZS13aWR0aD0iMy41IgogICAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgICA8bGluZSB4MT0iNiIgeTE9Ii0xNiIgeDI9IjI2IiB5Mj0iLTE2IiBjbGFzcz0ibG4iIHN0cm9rZT0iIzI1NjNFQiIvPgogICAgPHBhdGggZD0iTS0yNCw2IGw3LDcgbDE0LC0xNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjMuNSIKICAgICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogICAgPGxpbmUgeDE9IjYiIHkxPSIxMCIgeDI9IjI2IiB5Mj0iMTAiIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8cGF0aCBkPSJNLTI0LDMyIGw3LDcgbDE0LC0xNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjMuNSIKICAgICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogICAgPGxpbmUgeDE9IjYiIHkxPSIzNiIgeDI9IjI2IiB5Mj0iMzYiIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8Y2lyY2xlIGN4PSItNjIiIGN5PSItMzQiIHI9IjE1IiBmaWxsPSIjQkZEQkZFIiBzdHJva2U9IiMyNTYzRUIiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgICA8dGV4dCB4PSItNjIiIHk9Ii0yOSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMxRTNBOEEiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJwPC90ZXh0PgogICAgPGNpcmNsZSBjeD0iNjIiIGN5PSI0MCIgcj0iMTUiIGZpbGw9IiNCRkRCRkUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICAgIDxwYXRoIGQ9Ik01Niw0MCBxNiwtMTEgMTIsLTYgcS0yLDEwIC0xMiw2IHoiIGZpbGw9IiMyNTYzRUIiLz4KICAgIDxjaXJjbGUgY3g9IjYwIiBjeT0iLTQ2IiByPSIxMyIgZmlsbD0iI0JGREJGRSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogICAgPHBhdGggZD0iTTU1LC00NiBsNCw0IGw3LC04IiBmaWxsPSJub25lIiBzdHJva2U9IiMyNTYzRUIiIHN0cm9rZS13aWR0aD0iMi44IgogICAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPC9nPgogIDx0ZXh0IHg9IjUzMyIgeT0iNzkyIiBjbGFzcz0iY2FwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5SYWNpayBDb21wbGlhbmNlICZhbXA7PC90ZXh0PgogIDx0ZXh0IHg9IjUzMyIgeT0iODE0IiBjbGFzcz0iY2FwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Qcm9jdXJlbWVudCBSZXBvcnQ8L3RleHQ+CgogIDwhLS0gPT09PT09PT09PT09PT09PT0gZGF0YWJhc2UgPT09PT09PT09PT09PT09PT0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTI1LDY0MikiPgogICAgPHBhdGggZD0iTTAsMTQgVjcyIGE1NiwxNSAwIDAgMCAxMTIsMCBWMTQiIGZpbGw9IiNGRkZGRkYiIGNsYXNzPSJibHVlIi8+CiAgICA8ZWxsaXBzZSBjeD0iNTYiIGN5PSIxNCIgcng9IjU2IiByeT0iMTUiIGZpbGw9IiNGRkZGRkYiIGNsYXNzPSJibHVlIi8+CiAgICA8cGF0aCBkPSJNMCwzMyBhNTYsMTUgMCAwIDAgMTEyLDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICAgIDxwYXRoIGQ9Ik0wLDUzIGE1NiwxNSAwIDAgMCAxMTIsMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwvZz4KICA8dGV4dCB4PSI5ODEiIHk9Ijc2MiIgY2xhc3M9ImNhcCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+cmFjaWsuZGI8L3RleHQ+CiAgPHRleHQgeD0iOTgxIiB5PSI3ODMiIGNsYXNzPSJub3RlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xOC4wMDggaGlkYW5nYW4gwrcgMjU4cmIgYmFyaXMgYmFoYW48L3RleHQ+CgogIDwhLS0gZGF0YWJhc2UgLT4gcmVwb3J0IC0tPgogIDx0ZXh0IHg9Ijc5MCIgeT0iNjU2IiBjbGFzcz0ibGJsIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5OdXRyaXRpb24gJmFtcDs8L3RleHQ+CiAgPHRleHQgeD0iNzkwIiB5PSI2NzkiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNvc3QgRmFjdHM8L3RleHQ+CiAgPGxpbmUgeDE9IjkxOSIgeTE9IjcwMCIgeDI9IjY0MCIgeTI9IjcwMCIgY2xhc3M9ImZsb3ciLz4KCiAgPCEtLSBkYXRhIHNvdXJjZXMgLT4gZGF0YWJhc2UgLS0+CiAgPGxpbmUgeDE9IjExMTIiIHkxPSI3MDAiIHgyPSIxMDQ2IiB5Mj0iNzAwIiBjbGFzcz0iZmxvdyIvPgoKICA8IS0tID09PT09PT09PT09PT09PT09IGRhdGEgc291cmNlcyA9PT09PT09PT09PT09PT09PSAtLT4KICA8cmVjdCB4PSIxMTE4IiB5PSI1NTIiIHdpZHRoPSI0MjAiIGhlaWdodD0iMjU2IiBjbGFzcz0iZ3JwIi8+CgogIDxyZWN0IHg9IjExOTYiIHk9IjU3MCIgd2lkdGg9IjMxNiIgaGVpZ2h0PSI5OCIgY2xhc3M9InN1YiIvPgogIDx0ZXh0IHg9IjEzNTQiIHk9IjU5NCIgY2xhc3M9InQiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5SZWZlcmVuY2UgU3RhbmRhcmRzPC90ZXh0PgogIDx0ZXh0IHg9IjEyMTQiIHk9IjYxOCIgY2xhc3M9ImJ1bCI+4oCiIEFLRyAyMDE5IChQZXJtZW5rZXMgMjgvMjAxOSk8L3RleHQ+CiAgPHRleHQgeD0iMTIxNCIgeT0iNjM4IiBjbGFzcz0iYnVsIj7igKIgSXNpIFBpcmluZ2t1IChQZXJtZW5rZXMgNDEvMjAxNCk8L3RleHQ+CiAgPHRleHQgeD0iMTIxNCIgeT0iNjU4IiBjbGFzcz0iYnVsIj7igKIgTUJHIFJwMTAuMDAwL3BvcnNpIChCR04pPC90ZXh0PgoKICA8cmVjdCB4PSIxMTMwIiB5PSI2ODQiIHdpZHRoPSIxOTYiIGhlaWdodD0iMTEwIiBjbGFzcz0ic3ViIi8+CiAgPHRleHQgeD0iMTIyOCIgeT0iNzA4IiBjbGFzcz0idCIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNvbXBvc2l0aW9uPC90ZXh0PgogIDx0ZXh0IHg9IjExNDQiIHk9IjczMiIgY2xhc3M9ImJ1bCI+4oCiIFRLUEkgMjAyMDwvdGV4dD4KICA8dGV4dCB4PSIxMTQ0IiB5PSI3NTIiIGNsYXNzPSJidWwiPuKAoiAxLjE0NiBiYWhhbiBwYW5nYW48L3RleHQ+CiAgPHRleHQgeD0iMTE0NCIgeT0iNzcyIiBjbGFzcz0iYnVsIj7igKIgQkREICsgMjIgemF0IGdpemk8L3RleHQ+CgogIDxyZWN0IHg9IjEzMzgiIHk9IjY4NCIgd2lkdGg9IjE4OCIgaGVpZ2h0PSIxMTAiIGNsYXNzPSJzdWIiLz4KICA8dGV4dCB4PSIxNDMyIiB5PSI3MDgiIGNsYXNzPSJ0IiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UHJpY2UgRGF0YTwvdGV4dD4KICA8dGV4dCB4PSIxMzUyIiB5PSI3MzIiIGNsYXNzPSJidWwiPuKAoiBCYXBhbmFzIHNuYXBzaG90PC90ZXh0PgogIDx0ZXh0IHg9IjEzNTIiIHk9Ijc1MiIgY2xhc3M9ImJ1bCI+4oCiIEJJIFBJSFBTPC90ZXh0PgogIDx0ZXh0IHg9IjEzNTIiIHk9Ijc3MiIgY2xhc3M9ImJ1bCI+4oCiIEluZGVrcyBrZW1haGFsYW48L3RleHQ+CgogIDx0ZXh0IHg9IjEzMjgiIHk9IjgzOCIgY2xhc3M9ImxibCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Rm9vZCAmYW1wOyBQcmljZSBEYXRhIFNvdXJjZTwvdGV4dD4KCiAgPCEtLSA9PT09PT09PT09PT09PT09PSBmZWVkYmFjayBsb29wcyB0byB0aGUgb3BlcmF0b3IgPT09PT09PT09PT09PT09PT0gLS0+CiAgPCEtLSBtZW51IHBsYW4gLT4gb3BlcmF0b3IgOiBjaG9vc2luZyB0aGUgbWVudSAtLT4KICA8cGF0aCBkPSJNNDAwLDQ1NSBDMzAwLDQzMCAxNzAsNDAwIDExOCwzMjIiIGNsYXNzPSJmbG93Ii8+CiAgPHRleHQgeD0iMzAwIiB5PSIzODEiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNob29zaW5nIE1lbnU8L3RleHQ+CgogIDwhLS0gcmVwb3J0IC0+IG9wZXJhdG9yIDogYW5zd2VycyAtLT4KICA8cGF0aCBkPSJNNDUyLDcwNiBDMjYwLDc2MCAxMDAsNzAwIDk2LDMzMCIgY2xhc3M9ImZsb3ciLz4KCiAgPCEtLSBvcGVyYXRvciAtPiByZXBvcnQgOiBxdWVzdGlvbnMgLS0+CiAgPHBhdGggZD0iTTcwLDMzNiBDNDAsNjQwIDEyMCw4MDAgNDQwLDc1MiIgY2xhc3M9ImZsb3ciLz4KICA8dGV4dCB4PSIxNzAiIHk9IjU0OCIgY2xhc3M9ImxibCI+QXNraW5nIHdoeSBhIGRpc2ggd2FzPC90ZXh0PgogIDx0ZXh0IHg9IjE3MCIgeT0iNTcxIiBjbGFzcz0ibGJsIj5jaG9zZW4sIGhvdyB0byByYWlzZSBBS0c8L3RleHQ+CiAgPHRleHQgeD0iMTcwIiB5PSI1OTQiIGNsYXNzPSJsYmwiPmFkZXF1YWN5LCB3aGF0IHRvIGJ1eTwvdGV4dD4KPC9zdmc+Cg==" alt="Arsitektur Racik: operator SPPG mengirim teks Bahasa Indonesia ke orkestrator RACIK SEA-LION, melewati penyaring kandidat menuju korpus hidangan yang dibangun dari korpus resep daerah; mesin gizi dan biaya menghasilkan rencana menu lewat CP-SAT; laporan kepatuhan dan belanja kembali ke operator, dengan racik.db yang diisi komposisi TKPI, standar rujukan, dan data harga.">
+          </div>
+          <figcaption>
+            Sistem utuh. Kotak kuning adalah langkah proses, ikon biru adalah penyimpanan
+            dan model, kelompok bergaris putus adalah sumber data eksternal. Disajikan
+            langsung di <code>/architecture.svg</code>; sumber di <code>docs/architecture.svg</code>.
+          </figcaption>
+        </figure>
+
+        <div class="rule">
+          <div class="k">Aturan pengikat</div>
+          <p>
+            Tidak ada angka gram, rupiah, kalori, atau pemenuhan yang dihasilkan model.
+            Masing-masing dihitung mesin lalu diserahkan ke model sebagai keluaran alat.
+            Model bahasa yang diam-diam membulatkan angka protein akan menghancurkan
+            satu-satunya sifat yang membuat Racik layak dipakai, sehingga model tidak
+            pernah diberi kesempatan menghitungnya.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ 02 ============ -->
+      <section id="lifecycle">
+        <h2><span class="sec-n">02</span>Jalur permintaan</h2>
+        <p>
+          Dua pintu masuk menuju mesin yang sama. Jalur formulir bersifat langsung dan
+          deterministik; jalur bahasa menambahkan SEA-LION di depannya. Tidak ada satu
+          pun yang bisa menghasilkan angka yang tak bisa dihasilkan yang lain.
+        </p>
+
+        <h3>Jalur formulir — <code>POST /api/plan</code></h3>
+        <pre><code>PlanBody -> PlanRequest -> MenuOptimizer.solve()
+  |-- _candidates()   saring per slot: pantangan, batas biaya,
+  |                   slot khusus komponen, dedup nama, peringkat, 220 teratas
+  |-- model CP-SAT    komposisi nampan · variasi · batas gizi lunak
+  |                   · plafon energi · lemak <= 30% energi · pagu lunak
+  `-- _extract()      -> PlanResult(hari, pelonggaran, kelebihan pagu)
+                      -> _serialise() -> baris kepatuhan + catatan</code></pre>
+
+        <h3>Jalur bahasa — <code>POST /api/ask</code></h3>
+        <pre><code>pertanyaan -> RacikOrchestrator.ask()
+  |-- klien tak terkonfigurasi? -> parse_intent() aturan -> plan_menu -> teks
+  `-- loop agen (<= 6 langkah, deteksi pemanggilan berulang)
+        SEA-LION -> tool_calls -> _invoke() -> hasil alat JSON
+                 ^ dikembalikan sebagai pesan role:"tool"
+        -> prosa akhir + jejak ToolInvocation + muatan rencana</code></pre>
+
+        <p>
+          Kegagalan pada jalur bahasa menurun, bukan patah: kunci API yang hilang,
+          galat jaringan, atau galat HTTP dari SEA-LION semuanya jatuh ke perencana
+          berbasis aturan, yang mengembalikan angka yang sama dari alat yang sama.
+        </p>
+      </section>
+
+      <!-- ============ 03 ============ -->
+      <section id="pipeline">
+        <h2><span class="sec-n">03</span>Alur pembangunan</h2>
+        <p>
+          <code>scripts/build_db.py</code> menjalankan ini sekali, sekitar 30 detik, dan
+          menulis <code>data/racik.db</code>. Langkahnya diberi nomor karena memang
+          berurutan — tiap langkah memakai keluaran langkah sebelumnya.
+        </p>
+
+        <div class="pipe">
+          <div class="step"><div class="i">1</div><div>
+            <h4>Uraikan ukuran rumah tangga</h4>
+            <p><code>racik/urt.py</code> — 260.734 baris bahan menjadi gram lewat aturan
+            eksplisit. "2 ons ikan" -> 200 g, "1 papan tempe" -> 200 g, "secukupnya garam"
+            -> 2 g ditandai tak terkuantifikasi. 99,98% terselesaikan.</p>
+          </div></div>
+          <div class="step"><div class="i">2</div><div>
+            <h4>Padankan ke komposisi</h4>
+            <p><code>racik/tkpi.py</code> — pencocokan berbasis token ke kode TKPI melalui
+            200+ alias kurasi, pengganti terdokumentasi, lalu pencocokan samar. Tidak
+            pernah substring: "ayam" ada di dalam "Bayam".</p>
+          </div></div>
+          <div class="step"><div class="i">3</div><div>
+            <h4>Hitung gizi</h4>
+            <p><code>racik/nutrition.py</code> — gram bersih = gram kotor × BDD/100, lalu
+            komposisi per 100 g, lalu faktor retensi FAO/INFOODS sesuai metode masak yang
+            terdeteksi. Minyak goreng dihitung pada penyerapan 10%.</p>
+          </div></div>
+          <div class="step"><div class="i">4</div><div>
+            <h4>Biayai atas berat kotor</h4>
+            <p><code>racik/prices.py</code> — biaya dikenakan pada berat beli, bukan berat
+            bersih, melalui tangga cadangan: kode TKPI -> nama bahan -> kelompok pangan ->
+            nilai bawaan tabel. Dasar yang dipakai dilaporkan.</p>
+          </div></div>
+          <div class="step"><div class="i">5</div><div>
+            <h4>Klasifikasi dan skala</h4>
+            <p>Tetapkan slot nampan Isi Piringku dari pangsa massa bahan, perkirakan jumlah
+            porsi dari massa penentu slot terhadap porsi rujukan, lalu bagi seluruh panci
+            dengan angka itu.</p>
+          </div></div>
+          <div class="step"><div class="i">6</div><div>
+            <h4>Simpan</h4>
+            <p>Tulis <code>foods</code>, <code>dishes</code>, dan <code>dish_lines</code>
+            ke SQLite dengan indeks pada slot, provinsi, pulau, dan bahan utama, ditambah
+            72 komponen sajian (nasi, umbi, buah, susu) dalam beberapa ukuran porsi.</p>
+          </div></div>
+        </div>
+      </section>
+
+      <!-- ============ 04 ============ -->
+      <section id="modules">
+        <h2><span class="sec-n">04</span>Modul</h2>
+        <p>
+          Disusun menurut urutan ketergantungan — tiap modul hanya bergantung pada yang di
+          atasnya. Tidak ada modul yang mengimpor modul di bawahnya, sehingga tumpukan ini
+          dapat dibaca dari atas ke bawah.
+        </p>
+
+        <div class="mods">
+          <div class="mod">
+            <div class="path">racik/config.py</div><div class="loc">113 baris</div>
+            <div class="what">Kebijakan program: pagu, komposisi nampan, porsi rujukan, lokasi berkas.</div>
+            <div class="surf">MBGConfig · SLOTS · REFERENCE_PORTION_G · COMPONENT_ONLY_SLOTS · OPTIONAL_SLOTS · MBG</div>
+            <div class="why">Semua di sini adalah kebijakan, bukan fisika — dapat diubah per SPPG dan per daerah, tidak pernah ditanam di tempat pemanggilan.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/akg.py</div><div class="loc">148 baris</div>
+            <div class="what">Kelompok umur AKG 2019 (Permenkes 28/2019) dan target per sekali makan.</div>
+            <div class="surf">AgeBand · stage_band() · blended_band() · binding_band() · BINDING_NUTRIENTS · ADVISORY_NUTRIENTS</div>
+            <div class="why">Makro dan mikro dipisah dalam dua tingkat kepercayaan. Nilai mikronutrien berbeda antar sumber sekunder, sehingga bersifat informatif dan tidak pernah membatasi optimasi kecuali diaktifkan secara eksplisit.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/i18n.py</div><div class="loc">146 baris</div>
+            <div class="what">Teks Bahasa Indonesia dan Inggris untuk prosa yang ditulis server sendiri.</div>
+            <div class="surf">LANGS · DEFAULT_LANG · norm_lang() · t() · unit() · STRINGS</div>
+            <div class="why">Sebagian besar label sudah dwibahasa di respons API, jadi hanya catatan metodologi dan jawaban cadangan yang tinggal di sini. Menambah bahasa berarti menambah satu blok kunci; tidak ada bagian lain yang bercabang menurut bahasa.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/urt.py</div><div class="loc">490 baris</div>
+            <div class="what">Ukuran Rumah Tangga menjadi gram. Angka, satuan, densitas, berat butir.</div>
+            <div class="surf">parse_line() · parse_ingredient_block() · Confidence · MASS_UNITS_G · VOLUME_UNITS_ML · COUNT_UNITS_DEFAULT_G · PIECE_WEIGHTS · CANONICAL_UNIT</div>
+            <div class="why">Berbasis aturan, bukan LLM, sehingga tiap gram dapat ditelusuri ke aturan bernama dan menghasilkan angka sama saat diulang. Mesin gizi yang angkanya bergerak antar eksekusi tidak dapat diaudit.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/tkpi.py</div><div class="loc">510 baris</div>
+            <div class="what">Pemuat TKPI 2020, penanganan BDD, dan resolusi nama resep ke kode pangan.</div>
+            <div class="surf">FoodDB.from_csv() · FoodDB.match() · Food.purchase_grams() · DIRECT_ALIASES · PROXY_ALIASES · DISCARDED_AROMATICS · IDENTITY_MODIFIERS</div>
+            <div class="why">Nama TKPI terbalik ("Sapi, daging, lemak sedang, segar"), jadi pencocokan bekerja pada himpunan token dengan penjaga identitas. Alias dibaca dari tabel yang dimuat, tidak pernah disimpulkan.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/prices.py</div><div class="loc">147 baris</div>
+            <div class="what">Pencarian rupiah per kilogram dengan tangga cadangan eksplisit.</div>
+            <div class="surf">PriceTable.load() · PriceTable.cost_idr() · Price.basis · LivePriceClient.refresh()</div>
+            <div class="why">Endpoint harian Bapanas dan BI tidak terdokumentasi serta dibatasi wilayah, jadi snapshot berversi menjadi sumber kebenaran dan pembaruan langsung gagal-tertutup ke sana. Tidak ada bagian perencana yang bergantung pada jaringan.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/nutrition.py</div><div class="loc">513 baris</div>
+            <div class="what">Resep menjadi hidangan berbiaya dan bergizi, diskalakan ke satu porsi.</div>
+            <div class="surf">RecipeEngine.build() · Dish · DishQuality · IngredientLine · build_component_dishes() · RETENTION_FACTORS · OIL_ABSORPTION_RATE</div>
+            <div class="why">Membawa dua sumber galat terbesar secara terbuka: jumlah porsi diperkirakan (korpus tidak menyatakan hasil jadi) dan faktor retensi adalah perkiraan. Keduanya tampil lewat DishQuality.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/store.py</div><div class="loc">200 baris</div>
+            <div class="what">Lapisan baca SQLite. Hidangan dimuat tanpa baris bahan; baris dimuat saat dibutuhkan.</div>
+            <div class="surf">RacikStore.load_dishes() · dish() · lines() · hydrate() · search_dishes() · provinces() · island_of() · stats()</div>
+            <div class="why">18rb hidangan membawa 258rb baris, padahal satu optimasi hanya butuh baris untuk ~25 hidangan terpilih. Pemuatan penuh 0,5 detik.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/optimizer.py</div><div class="loc">607 baris</div>
+            <div class="what">Pemilihan menu CP-SAT di bawah batas AKG, pagu, dan aturan nampan.</div>
+            <div class="surf">MenuOptimizer.solve() · PlanRequest · PlanResult · DayPlan · Relaxation · dish_key() · W_NUTRIENT_SLACK · W_BUDGET_SLACK</div>
+            <div class="why">Batas gizi dan plafon pagu bersifat lunak dengan kelonggaran berdenda, sehingga optimasi selalu mengembalikan menu beserta daftar yang terpaksa dilonggarkan. "Infeasible" tidak menolong juru masak.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/procurement.py</div><div class="loc">77 baris</div>
+            <div class="what">Menu menjadi daftar belanja teragregasi sesuai jumlah porsi.</div>
+            <div class="surf">aggregate() · totals() · ProcurementLine.gross_kg</div>
+            <div class="why">Agregasi pada kode TKPI, bukan kata-kata resep, sehingga "bawang merah", "bamer", dan "5 siung bawang merah" menjadi satu baris pesanan pembelian.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/sealion.py</div><div class="loc">224 baris</div>
+            <div class="what">Klien SEA-LION: autentikasi, pembatasan laju, percobaan ulang, penguraian tool-call.</div>
+            <div class="surf">SeaLionClient.chat() · configured · describe() · ChatResult · ToolCall · ORCHESTRATOR_MODEL · SeaLionNotConfigured</div>
+            <div class="why">Dibangun di atas urllib, sehingga orkestrator tidak menambah dependensi. Membatasi diri sendiri ke 10 permintaan/menit sesuai dokumentasi dan mundur teratur saat 429.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/bedrock.py</div><div class="loc">269 baris</div>
+            <div class="what">SEA-LION di Amazon Bedrock lewat Custom Model Import, sekaligus pemilihan penyedia.</div>
+            <div class="surf">BedrockSeaLionClient.chat() · verify_deployment() · make_client() · SUPPORTED_REGIONS</div>
+            <div class="why">Pemanggilan alat tidak dijamin untuk model impor, jadi klien menyertakan pemeriksaan pra-pakai yang menguji chat dan alat secara terpisah, bukan membiarkan demo menemukannya saat berjalan.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/translate.py</div><div class="loc">268 baris</div>
+            <div class="what">Nama hidangan Indonesia diterjemahkan ke Inggris oleh SEA-LION, berkelompok dan ber-cache.</div>
+            <div class="surf">DishTranslator.translate() · Gloss · rule_gloss() · BATCH_SIZE</div>
+            <div class="why">Terjemahan mendampingi nama asli, tidak pernah menggantikannya — dapur memasak hidangan Indonesianya. Tiap hasil melaporkan asalnya, karena terjemahan keliru yang diatasnamakan model lebih buruk daripada tanpa terjemahan.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/orchestrator.py</div><div class="loc">765 baris</div>
+            <div class="what">Definisi alat, loop agen terbatas, dan cadangan berbasis aturan.</div>
+            <div class="surf">RacikOrchestrator.ask() · TOOL_SCHEMAS · ToolInvocation · OrchestratorResult · parse_intent() · MAX_STEPS · MAX_REPEATED_CALLS</div>
+            <div class="why">Loop dibatasi di kode, bukan di prompt. Kondisi berhenti yang hanya hidup di prompt adalah kondisi yang suatu saat tidak berhenti.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/report.py</div><div class="loc">328 baris</div>
+            <div class="what">Dokumen kepatuhan dan kebutuhan bahan siap cetak.</div>
+            <div class="surf">build_report() · plan_notes() · STRINGS</div>
+            <div class="why">Selebihnya adalah layar; ini keluarannya. Zat gizi informatif ditandai di setiap tabel dan pelonggaran mendapat bagiannya sendiri, karena dokumen kepatuhan yang menyembunyikan batas yang dilonggarkan lebih buruk daripada tidak ada dokumen.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/api.py</div><div class="loc">377 baris</div>
+            <div class="what">Permukaan FastAPI, serialisasi respons, host UI statis.</div>
+            <div class="surf">/api/meta · /api/plan · /api/dish/{id} · /api/procurement · /api/ask · /api/orchestrator · /api/health · /architecture.svg</div>
+            <div class="why">Serialisasi memisahkan zat gizi terverifikasi dari yang informatif dan selalu melampirkan catatan metodologi, sehingga pemanggil tidak dapat menampilkan angka tanpa peringatannya.</div>
+          </div>
+          <div class="mod">
+            <div class="path">ui/index.html</div><div class="loc">1.046 baris</div>
+            <div class="what">Antarmuka perencana satu berkas, Bahasa Indonesia dan Inggris. Tanpa langkah build.</div>
+            <div class="surf">formulir · tab hari · kartu nampan · dialog hidangan dengan asal gram · bilah kepatuhan · tabel belanja + CSV · panel Tanya Racik · tombol ID/EN</div>
+            <div class="why">Menampilkan tabel pelonggaran dan lencana INFO pada zat gizi informatif, sehingga antarmuka tidak dapat menyajikan rencana yang dilonggarkan seolah patuh penuh.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 05 ============ -->
+      <section id="data">
+        <h2><span class="sec-n">05</span>Model data</h2>
+        <p>
+          Satu berkas SQLite, 66 MB, dibangun ulang dari sumber oleh
+          <code>scripts/build_db.py</code>. Ini artefak turunan — tidak pernah disunting
+          manual, aman dihapus dan dibuat ulang.
+        </p>
+
+        <div class="tw">
+          <table>
+            <thead><tr><th>Tabel</th><th class="num">Baris</th><th class="num">Kolom</th><th>Isi</th></tr></thead>
+            <tbody>
+              <tr><td class="k">foods</td><td class="num">1.149</td><td class="num">25</td>
+                  <td>TKPI 2020 per 100 g bagian dapat dimakan, plus BDD, penanda imputasi, dan 3 entri sintetis (garam, air, kaldu)</td></tr>
+              <tr><td class="k">dishes</td><td class="num">18.008</td><td class="num">38</td>
+                  <td>Satu hidangan berbiaya per porsi: slot, jumlah porsi, biaya, 17 zat gizi, metrik mutu, daerah, bahan utama, indeks bahan untuk pencarian</td></tr>
+              <tr><td class="k">dish_lines</td><td class="num">257.887</td><td class="num">16</td>
+                  <td>Setiap baris bahan dengan gram kotor/bersih, biaya, kode TKPI, metode pencocokan, dan aturan URT yang menghasilkan angka gramnya</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Indeks: <code>idx_dishes_slot</code>, <code>idx_dishes_province</code>,
+          <code>idx_dishes_island</code>, <code>idx_dishes_mainfood</code>,
+          <code>idx_lines_dish</code>.
+        </p>
+
+        <h3>Sebaran hidangan</h3>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Slot nampan</th><th class="num">Hidangan</th><th class="num">Mutu rata-rata</th><th>Sumber</th></tr></thead>
+            <tbody>
+              <tr><td class="k">hewani</td><td class="num">13.525</td><td class="num">0,894</td><td>Korpus resep</td></tr>
+              <tr><td class="k">nabati</td><td class="num">3.051</td><td class="num">0,910</td><td>Korpus resep</td></tr>
+              <tr><td class="k">sayur</td><td class="num">826</td><td class="num">0,809</td><td>Korpus resep</td></tr>
+              <tr><td class="k">staple</td><td class="num">429</td><td class="num">0,836</td><td>Komponen sajian saja</td></tr>
+              <tr><td class="k">buah</td><td class="num">177</td><td class="num">0,819</td><td>Komponen sajian saja</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec">
+          <b>Mengapa pokok dan buah hanya dari komponen.</b> Nasi dimasak polos dan buah
+          dipotong — SPPG memasak tiga item sehari, bukan lima. Membatasi slot ini juga
+          menghapus satu kelas salah klasifikasi: tempe mendoan didominasi tepung terigu
+          secara massa dan akan menyamar sebagai "makanan pokok" yang meyakinkan.
+        </div>
+      </section>
+
+      <!-- ============ 06 ============ -->
+      <section id="api">
+        <h2><span class="sec-n">06</span>API HTTP</h2>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Rute</th><th>Metode</th><th>Mengembalikan</th></tr></thead>
+            <tbody>
+              <tr><td class="k">/api/meta</td><td><span class="tag get">GET</span></td>
+                  <td>Jenjang dengan target AKG, provinsi, slot nampan, daftar zat gizi, bahasa, konfigurasi pagu, statistik korpus</td></tr>
+              <tr><td class="k">/api/plan</td><td><span class="tag post">POST</span></td>
+                  <td>Menu tersusun: hari, hidangan per slot, baris kepatuhan, pelonggaran, catatan metodologi</td></tr>
+              <tr><td class="k">/api/dish/{id}</td><td><span class="tag get">GET</span></td>
+                  <td>Gizi per porsi, biaya, dan tiap bahan dengan kode TKPI serta asal angka gramnya</td></tr>
+              <tr><td class="k">/api/procurement</td><td><span class="tag post">POST</span></td>
+                  <td>Daftar belanja teragregasi menurut kode TKPI, diskalakan ke jumlah porsi, dalam kg kotor dan rupiah</td></tr>
+              <tr><td class="k">/api/ask</td><td><span class="tag post">POST</span></td>
+                  <td>Jawaban bahasa alami, jejak alat di baliknya, dan rencana yang dihitung</td></tr>
+              <tr><td class="k">/api/orchestrator</td><td><span class="tag get">GET</span></td>
+                  <td>Model yang aktif, keterjangkauannya, alat yang tersedia, batas langkah</td></tr>
+              <tr><td class="k">/api/health</td><td><span class="tag get">GET</span></td><td>Status hidup dan jumlah hidangan</td></tr>
+              <tr><td class="k">/architecture.svg</td><td><span class="tag get">GET</span></td><td>Diagram sistem, bersumber tunggal dari docs/</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Setiap endpoint <code>POST</code> menerima <code>"lang": "id"</code> atau
+          <code>"lang": "en"</code>. FastAPI juga menyajikan <code>/docs</code> (Swagger)
+          dan <code>/openapi.json</code>. UI dipasang di <code>/ui</code> dengan
+          <code>/</code> menyajikan perencana.
+        </p>
+      </section>
+
+      <!-- ============ 07 ============ -->
+      <section id="orchestrator">
+        <h2><span class="sec-n">07</span>Orkestrator</h2>
+        <p>
+          <a href="https://sea-lion.ai/">SEA-LION v4.5</a> (AI Singapore, Mei 2026) adalah
+          lapisan bahasa. Dipilih karena dua sifat terdokumentasi: dilatih untuk
+          bahasa-bahasa Asia Tenggara, sehingga operator menulis Bahasa Indonesia biasa,
+          dan disetel untuk <em>function-calling</em> presisi serta penggunaan alat agentik.
+        </p>
+
+        <div class="tw">
+          <table>
+            <thead><tr><th>Pengaturan</th><th>Nilai</th></tr></thead>
+            <tbody>
+              <tr><td>Endpoint</td><td class="k">https://api.sea-lion.ai/v1</td></tr>
+              <tr><td>Model</td><td class="k">aisingapore/Qwen-SEA-LION-v4.5-27B-IT</td></tr>
+              <tr><td>Protokol</td><td>Chat completions kompatibel OpenAI dengan tools</td></tr>
+              <tr><td>Autentikasi</td><td>Token Bearer dari <code>SEALION_API_KEY</code></td></tr>
+              <tr><td>Batas laju</td><td>10 permintaan/menit terdokumentasi — klien membatasi diri, mundur saat 429</td></tr>
+              <tr><td>Temperature</td><td>0 — ekstraksi parameter harus dapat diulang</td></tr>
+              <tr><td>Swakelola</td><td>Arahkan <code>base_url</code> ke server kompatibel OpenAI mana pun (mis. <code>Gemma-SEA-LION-v4.5-E2B-IT</code>)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Alat</h3>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Alat</th><th>Mengembalikan</th></tr></thead>
+            <tbody>
+              <tr><td class="k">plan_menu</td><td>Menu teroptimasi, biaya dan pemenuhan per hari, batas yang dilonggarkan</td></tr>
+              <tr><td class="k">budget_sensitivity</td><td>Pemenuhan dan biaya nyata pada beberapa pagu bahan</td></tr>
+              <tr><td class="k">search_dishes</td><td>Kandidat menurut slot, provinsi, batas biaya, batas protein</td></tr>
+              <tr><td class="k">get_dish</td><td>Gizi per porsi, biaya, bahan dengan asal angka gram</td></tr>
+              <tr><td class="k">procurement_list</td><td>Daftar belanja teragregasi sesuai jumlah porsi</td></tr>
+              <tr><td class="k">nutrition_reference</td><td>Target AKG per sekali makan, dipisah wajib dan informatif</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Keamanan loop</h3>
+        <ul class="tight">
+          <li><b>Batas langkah keras</b> — <code>MAX_STEPS = 6</code>, ditegakkan loop, bukan diminta lewat prompt.</li>
+          <li><b>Deteksi pemanggilan berulang</b> — tanda tangan panggilan identik lebih dari <code>MAX_REPEATED_CALLS = 2</code> kali dipotong dengan instruksi memakai hasil yang sudah dipegang.</li>
+          <li><b>Jejak menyeluruh</b> — alat tak dikenal, argumen salah, dan pengulangan yang diblokir semuanya masuk jejak. Dua bug tertangkap di sini saat pengujian: keduanya jalur galat yang keluar lebih awal dan melewati jejak, yang justru akan menyembunyikan kejadian paling perlu dilihat.</li>
+          <li><b>Penurunan mulus</b> — tanpa kunci, atau pada <code>SeaLionError</code> apa pun, alur beralih ke <code>parse_intent()</code> yang menjalankan alat yang sama.</li>
+        </ul>
+      </section>
+
+      
+      <!-- ============ 07b ============ -->
+      <section id="rubric">
+        <h2><span class="sec-n">7b</span>Rubrik kandidat</h2>
+        <p class="lede">
+          "Mengapa hidangan ini tidak pernah dipertimbangkan?" adalah pertanyaan
+          yang benar-benar diajukan ahli gizi SPPG, jadi penyaring awal
+          menyatakan aturannya alih-alih menguburnya di dalam loop.
+          <code>POST /api/candidates</code> mengembalikan gerbang, bobot, dan
+          berapa hidangan yang disingkirkan tiap gerbang.
+        </p>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Gerbang</th><th>Aturan</th></tr></thead>
+            <tbody>
+              <tr><td class="k">G1 slot</td><td>harus mengisi slot nampan yang sedang diisi</td></tr>
+              <tr><td class="k">G2 sumber</td><td><code>staple</code> dan <code>buah</code> hanya menerima komponen sajian</td></tr>
+              <tr><td class="k">G3 pantangan</td><td>istilah dicocokkan ke nama hidangan <em>dan</em> seluruh indeks bahan</td></tr>
+              <tr><td class="k">G4 id hidangan</td><td>veto eksplisit operator</td></tr>
+              <tr><td class="k">G5 plafon biaya</td><td>biaya per porsi &le; 85% pagu bahan</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <pre><code>nilai     = min(protein/target, 1,5) + min(energi/target, 1,5)
+efisiensi = nilai / (biaya/pagu + 0,15)
+skor      = efisiensi + 3,0 x kecocokan_daerah + 2,0 x mutu_data</code></pre>
+        <div class="spec">
+          <b>Yang diungkap corong ini.</b> Untuk SD di Jawa Tengah, plafon biaya
+          saja menyingkirkan <b>9.084 dari 13.525</b> hidangan lauk hewani — dua
+          pertiga korpus tersingkir karena harga sebelum solver berjalan. Itulah
+          cerita pagu, diukur dan bukan sekadar dinyatakan.
+        </div>
+      </section>
+
+      <!-- ============ 07c ============ -->
+      <section id="deliverable">
+        <h2><span class="sec-n">7c</span>Laporan dan terjemahan</h2>
+        <p>
+          <code>POST /api/report</code> adalah keluarannya: satu halaman siap
+          cetak berisi menu, kepatuhan AKG per hari, setiap batas yang
+          dilonggarkan, daftar belanja teragregasi dalam kilogram kotor, catatan
+          metodologi, dan kolom tanda tangan. HTML mandiri dengan gaya cetak,
+          dwibahasa, dengan mikronutrien informatif ditandai <code>INFO</code>.
+        </p>
+        <p>
+          <code>POST /api/translate</code> menerjemahkan nama hidangan dengan
+          SEA-LION, berkelompok 40 terhadap batas 10 permintaan/menit dan
+          ber-cache. Terjemahan mendampingi nama Indonesianya, tidak pernah
+          menggantikannya, dan melaporkan asalnya.
+        </p>
+      </section>
+
+      <!-- ============ 08 ============ -->
+      <section id="constants">
+        <h2><span class="sec-n">08</span>Konstanta kebijakan</h2>
+        <p>
+          Angka-angka ini mewakili kebijakan program dan regulasi, bukan fisika. Inilah
+          yang pertama diubah saat program berubah, dan masing-masing dapat ditelusuri ke
+          sebuah dokumen.
+        </p>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Konstanta</th><th class="num">Nilai</th><th>Dasar</th></tr></thead>
+            <tbody>
+              <tr><td class="k">budget_per_portion_idr</td><td class="num">10.000</td><td>Angka nasional berlaku 2025–26, dipangkas dari Rp15.000 pada Nov 2024</td></tr>
+              <tr><td class="k">ingredient_budget_share</td><td class="num">0,70</td><td>Pembagian 70/20/10 per SPPG oleh BGN -> ~Rp7.000 untuk bahan baku</td></tr>
+              <tr><td class="k">akg_fraction</td><td class="num">1/3</td><td>Satu kali makan MBG ≈ sepertiga AKG harian (BGN)</td></tr>
+              <tr><td class="k">fat_energy_ceiling</td><td class="num">0,30</td><td>Pedoman gizi Indonesia baku</td></tr>
+              <tr><td class="k">REFERENCE_PORTION_G</td><td class="num">150 / 75 / 60 / 100 / 100</td><td>Porsi rujukan Isi Piringku: pokok, hewani, nabati, sayur, buah</td></tr>
+              <tr><td class="k">OIL_ABSORPTION_RATE</td><td class="num">0,10</td><td>Makanan goreng menyerap ~8–12% bobotnya dalam minyak (Bognár)</td></tr>
+              <tr><td class="k">1 ons</td><td class="num">100 g</td><td>Kelaziman kuliner Indonesia — satu hektogram, bukan ons Inggris 28 g</td></tr>
+              <tr><td class="k">faktor konversi nasi</td><td class="num">0,40</td><td>Kemenkes matang->mentah: 150 g nasi = 60 g beras mentah</td></tr>
+              <tr><td class="k">W_NUTRIENT_SLACK / W_BUDGET_SLACK</td><td class="num">400 / 900</td><td>Melebihi pagu didenda lebih berat daripada kurang gizi; keduanya di atas rupiah</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 09 ============ -->
+      <section id="results">
+        <h2><span class="sec-n">09</span>Hasil terukur</h2>
+
+        <h3>Ekstraksi dan pencocokan</h3>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Asal angka gram</th><th class="num">Baris</th><th>Resolusi bahan</th><th class="num">Baris</th></tr></thead>
+            <tbody>
+              <tr><td>Berat butir, bahan dikenal</td><td class="num">110.309</td><td>Alias kurasi</td><td class="num">201.861</td></tr>
+              <tr><td>Volume × densitas</td><td class="num">55.255</td><td>Pengganti terdokumentasi</td><td class="num">4.583</td></tr>
+              <tr><td>Nominal ("secukupnya")</td><td class="num">47.472</td><td>Token samar</td><td class="num">3.026</td></tr>
+              <tr><td>Berat butir, cadangan kategori</td><td class="num">25.646</td><td>Aromatik + tak terpadankan</td><td class="num">48.417</td></tr>
+              <tr><td>Satuan massa eksplisit</td><td class="num">19.156</td><td></td><td class="num"></td></tr>
+              <tr><td><span class="bad">Tak terselesaikan</span></td><td class="num">49</td><td></td><td class="num"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Dari bagian yang tak terpadankan, sekitar 13 poin persentase adalah bumbu aromatik
+          yang diangkat sebelum disajikan — daun salam, serai, lengkuas. Semuanya tetap
+          dibiayai dan muncul di daftar belanja, tetapi tidak menyumbang gizi. Itu perilaku
+          yang benar, bukan celah.
+        </p>
+
+        <h3>Temuan yang penting</h3>
+        <p>Menu lima hari untuk Jawa Tengah, menurut jenjang usia dan pagu bahan:</p>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Jenjang</th><th class="num">Pagu</th><th class="num">Energi rata-rata</th><th class="num">Target</th><th class="num">Pemenuhan</th><th class="num">Biaya nyata</th></tr></thead>
+            <tbody>
+              <tr><td>SD (7–12)</td><td class="num">Rp7.000</td><td class="num">552</td><td class="num">617</td><td class="num bad">0,87</td><td class="num">Rp6.970</td></tr>
+              <tr><td>SD (7–12)</td><td class="num">Rp10.000</td><td class="num">691</td><td class="num">617</td><td class="num ok">1,00</td><td class="num">Rp7.724</td></tr>
+              <tr><td>SMP (13–15)</td><td class="num">Rp7.000</td><td class="num">558</td><td class="num">742</td><td class="num bad">0,80</td><td class="num">Rp6.990</td></tr>
+              <tr><td>SMP (13–15)</td><td class="num">Rp10.000</td><td class="num">833</td><td class="num">742</td><td class="num ok">1,00</td><td class="num">Rp8.559</td></tr>
+              <tr><td>SMA (16–18)</td><td class="num">Rp7.000</td><td class="num">555</td><td class="num">792</td><td class="num bad">0,78</td><td class="num">Rp6.981</td></tr>
+              <tr><td>SMA (16–18)</td><td class="num">Rp10.000</td><td class="num">857</td><td class="num">792</td><td class="num ok">1,00</td><td class="num">Rp8.617</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec">
+          Pada pagu bahan Rp7.000, <b>tidak ada kombinasi dalam korpus 18.000 hidangan yang
+          memenuhi sepertiga AKG untuk anak usia sekolah.</b> Pagu menjadi batas pengikat
+          dan pemenuhan berhenti di kisaran 0,78–0,87. Kepatuhan penuh muncul di kisaran
+          Rp7.700–Rp8.600 belanja bahan. Racik melaporkannya sebagai pelonggaran yang
+          disebut dan terukur, bukan diam-diam menyajikan nampan yang kurang.
+        </div>
+      </section>
+
+      <!-- ============ 10 ============ -->
+      <section id="tests">
+        <h2><span class="sec-n">10</span>Pengujian</h2>
+        <p>
+          <code>python -m pytest tests -q</code> — 137 pengujian, sekitar 90 detik. Tanpa
+          jaringan dan tanpa kunci API.
+        </p>
+        <h3>Mesin — <code>tests/test_racik.py</code> (48)</h3>
+        <ul class="tight">
+          <li>Penguraian angka dan satuan: pecahan, bilangan campuran, rentang, glif pecahan, dan masukan cacat yang harus menurun mulus alih-alih menggagalkan pembangunan 260rb baris.</li>
+          <li>Konvensi <code>1 ons = 100 g</code> dan patokan sendok (1 sdm = 10 ml, 1 sdt = ⅓ sdm).</li>
+          <li>Jebakan substring ayam/bayam, nama TKPI terbalik, penjaga pengubah identitas, dan pemeriksaan bahwa setiap kode alias benar-benar ada.</li>
+          <li>Berat beli BDD, vitamin A sebagai ekuivalen retinol, pelaporan dasar harga.</li>
+          <li>Penyerapan minyak goreng, termasuk batas tepat saat pembatasan mulai berlaku.</li>
+          <li>Perilaku batas lunak pada pagu yang sengaja dibuat mustahil: menu harus tetap kembali, dengan kekurangannya disebut.</li>
+        </ul>
+        <h3>Orkestrasi — <code>tests/test_orchestrator.py</code> (28)</h3>
+        <ul class="tight">
+          <li>Loop agen dijalankan dengan pengganti SEA-LION bernaskah, sehingga tidak perlu kunci atau jaringan.</li>
+          <li>Hasil alat dikembalikan ke model; batas langkah bertahan terhadap model yang hanya memanggil alat; pemanggilan berulang dipotong.</li>
+          <li>Alat tak dikenal dan argumen salah dilaporkan di jejak, tidak pernah dilempar sebagai galat.</li>
+          <li>Penguraian maksud, termasuk bahwa masukan tak terbaca menghasilkan nilai bawaan, bukan tebakan.</li>
+          <li>Jalur cadangan tetap mengembalikan angka nyata, dan pantangan benar-benar sampai ke perencana.</li>
+        </ul>
+        <h3>Dwibahasa — <code>tests/test_i18n.py</code> (26)</h3>
+        <ul class="tight">
+          <li>Kedua katalog wajib punya himpunan kunci identik, nilai tak kosong, dan placeholder yang cocok.</li>
+          <li>Tidak boleh ada kunci yang sama persis antar bahasa — menangkap blok yang disalin dan lupa diterjemahkan.</li>
+          <li>Setiap pemanggilan <code>t("…")</code> dan atribut <code>data-i18n</code> di UI harus merujuk kunci yang terdefinisi.</li>
+          <li>Satuan mengikuti bahasa, dan kode bahasa tak dikenal jatuh ke bawaan tanpa membocorkan kunci mentah.</li>
+        </ul>
+      </section>
+
+      <!-- ============ 11 ============ -->
+      <section id="limits">
+        <h2><span class="sec-n">11</span>Keterbatasan</h2>
+        <p>Baca bagian ini sebelum mengutip angka Racik ke pihak luar.</p>
+        <ul class="tight">
+          <li><b>Mikronutrien belum ditegakkan.</b> Sumber sekunder berbeda soal zat besi dan seng AKG 2019 — laki-laki 10–12 dilaporkan 8 mg dan juga 13 mg. Ca, Fe, Zn, vitamin A, dan vitamin C dihitung dan ditampilkan, ditandai <code>INFO</code>, serta dikeluarkan dari batasan sampai disalin dari dokumen Permenkes 28/2019 asli. <em>Ini pekerjaan terbuka bernilai tertinggi.</em></li>
+          <li><b>Jumlah porsi diperkirakan</b>, tidak dinyatakan resep sumber. Diturunkan dari massa bahan penentu slot terhadap porsi rujukan. Ini sumber galat per porsi terbesar.</li>
+          <li><b>Faktor retensi adalah perkiraan</b>, diterapkan pada tingkat kategori menurut metode masak yang terdeteksi — FAO/INFOODS menyatakan hal yang sama tentang tabelnya sendiri.</li>
+          <li><b>Harga adalah snapshot bertanggal.</b> Endpoint harian Bapanas dan BI tidak terdokumentasi dan dibatasi wilayah; pembaruan langsung bersifat best-effort dan gagal-tertutup.</li>
+          <li><b>Korpus adalah masakan rumahan</b>, sehingga takaran dan biaya condong ke skala rumah tangga, bukan pengadaan SPPG grosir.</li>
+          <li><b>Penetapan daerah diwarisi</b> dari pengklasifikasi kata kunci berkas sumber (11.715 keyakinan tinggi / 6.418 sedang).</li>
+          <li><b>Jalur SEA-LION langsung belum diverifikasi terhadap API sungguhan.</b> Transport, autentikasi, pembatasan laju, dan penguraian tool-call mengikuti kontrak terdokumentasi, dan loop diuji penuh dengan pengganti, tetapi belum ada panggilan dengan kunci asli. Set <code>SEALION_API_KEY</code> lalu pastikan <code>/api/orchestrator</code> melaporkan <code>mode: sealion</code>.</li>
+        </ul>
+      </section>
+
+      <!-- ============ 12 ============ -->
+      <section id="bilingual">
+        <h2><span class="sec-n">12</span>Build dwibahasa</h2>
+        <p class="lede">
+          Racik dikirim dalam Bahasa Indonesia dan Inggris dari <strong>satu basis kode</strong>.
+          Dua cabang yang dipelihara manual akan menyimpang dalam sepekan, jadi kedua build
+          rilis hanya berbeda pada bahasa <em>bawaan</em>-nya.
+        </p>
+        <p>
+          Kedua arsip membawa katalog ID/EN lengkap beserta tombol pengalih, sehingga build
+          mana pun dapat berjalan dalam bahasa mana pun. Nama hidangan tidak pernah
+          diterjemahkan — "Tempe Mendoan" adalah nama makanan, bukan label.
+        </p>
+
+        <h3>Di mana bahasa tinggal</h3>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Lapisan</th><th>Mekanisme</th></tr></thead>
+            <tbody>
+              <tr><td class="k">racik/i18n.py</td>
+                  <td>Prosa yang ditulis server sendiri: catatan metodologi, jawaban cadangan berbasis aturan, dan satu satuan yang berbeda (<code>kkal</code> / <code>kcal</code>)</td></tr>
+              <tr><td class="k">Respons API</td>
+                  <td>Label sudah dwibahasa — tiap baris kepatuhan dan pelonggaran membawa <code>label_id</code> dan <code>label_en</code>, klien tinggal memilih</td></tr>
+              <tr><td class="k">ui/index.html</td>
+                  <td>Katalog <code>STRINGS</code> dengan <code>t()</code>, atribut <code>data-i18n</code>, format angka sesuai lokal, dan tombol yang disimpan di <code>localStorage</code></td></tr>
+              <tr><td class="k">Orkestrator</td>
+                  <td>Arahan bahasa yang ditambahkan ke prompt sistem, sehingga bahasa antarmuka menang saat pertanyaannya sendiri ambigu</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Membuat arsipnya</h3>
+        <pre><code>python scripts/package.py     # -> dist/racik-id.zip, dist/racik-en.zip</code></pre>
+        <p>
+          Skrip menulis ulang tepat dua baris bertanda per build —
+          <code>DEFAULT_LANG</code> di <code>ui/index.html</code> dan di
+          <code>racik/i18n.py</code> — menukar README yang sesuai, lalu menolak menulis
+          arsip yang gagal pemeriksaan strukturnya. Selebihnya identik byte per byte.
+        </p>
+        <div class="spec">
+          <b>racik.db sengaja dikecualikan.</b> Berkas ini artefak turunan 66 MB yang
+          <code>scripts/build_db.py</code> bangun ulang dalam ~30 detik dari sumber mentah
+          yang <em>ikut</em> disertakan. Menyertakannya akan melipatempatkan ukuran arsip
+          untuk sesuatu yang bisa dibangun penerima — dan salinan usang lebih buruk
+          daripada tidak ada. Tiap arsip 6,5 MB, 29 berkas.
+        </div>
+
+        <h3>Dijaga pengujian</h3>
+        <ul class="tight">
+          <li>Kedua katalog wajib punya himpunan kunci identik, nilai tak kosong, dan <code>{placeholder}</code> yang cocok.</li>
+          <li>Tidak boleh ada kunci identik antar bahasa — menangkap blok yang disalin dan tak pernah diterjemahkan.</li>
+          <li>Setiap <code>t("…")</code> dan atribut <code>data-i18n</code> di UI harus merujuk kunci terdefinisi, dan keluarga kunci dinamis (<code>slot.*</code>, <code>n.*</code>) harus lengkap.</li>
+          <li>Penanda build <code>DEFAULT_LANG</code> harus ada dan berbentuk benar, atau pengemasan gagal dengan lantang.</li>
+        </ul>
+        <p>
+          Kedua arsip diverifikasi dengan diekstrak ke direktori bersih, membangun basis data
+          dari sumber mentah yang dikemas, lalu menjalankan seluruh pengujian:
+          <span class="ok">102 lulus</span> pada masing-masing. Uji itu menangkap satu cacat
+          nyata — pengujian yang memeriksa keluaran Bahasa Indonesia sehingga gagal pada
+          build Inggris.
+        </p>
+      </section>
+
+      <!-- ============ 13 ============ -->
+      <section id="runbook">
+        <h2><span class="sec-n">13</span>Panduan jalan</h2>
+        <pre><code>pip install -r requirements.txt
+python scripts/build_db.py                   # ~30 dtk -> data/racik.db (66 MB)
+export SEALION_API_KEY=...                   # opsional; mengaktifkan orkestrator
+python -m uvicorn racik.api:app --port 8000  # http://127.0.0.1:8000
+python -m pytest tests -q                    # 102 pengujian
+python scripts/package.py                    # dist/racik-id.zip + racik-en.zip</code></pre>
+
+        <p>
+          Dependensi: <code>ortools</code>, <code>fastapi</code>, <code>uvicorn</code>,
+          <code>rapidfuzz</code>, <code>pandas</code>, <code>openpyxl</code>,
+          <code>pytest</code>. Klien SEA-LION hanya memakai pustaka standar.
+        </p>
+
+        <h3>Tempat melakukan perubahan umum</h3>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Untuk mengubah…</th><th>Sunting</th><th>Lalu</th></tr></thead>
+            <tbody>
+              <tr><td>Pagu, komposisi nampan, porsi</td><td class="k">racik/config.py</td><td>Tidak perlu apa-apa — dibaca saat optimasi</td></tr>
+              <tr><td>Harga bahan</td><td class="k">data/prices_id.json</td><td>Bangun ulang basis data</td></tr>
+              <tr><td>Menambah alias atau pengganti bahan</td><td class="k">racik/tkpi.py</td><td>Bangun ulang; uji integritas alias menjaga kodenya</td></tr>
+              <tr><td>Satuan atau berat butir</td><td class="k">racik/urt.py</td><td>Bangun ulang; tambahkan uji parser</td></tr>
+              <tr><td>Perilaku atau bobot solver</td><td class="k">racik/optimizer.py</td><td>Tidak perlu bangun ulang</td></tr>
+              <tr><td>Menambah alat orkestrator</td><td class="k">racik/orchestrator.py</td><td>Tambahkan ke <code>TOOL_SCHEMAS</code> dan <code>self.tools</code>; ada uji yang mencocokkan keduanya</td></tr>
+              <tr><td>Mengaktifkan batasan mikronutrien</td><td class="k">racik/akg.py</td><td>Verifikasi dulu terhadap PDF Permenkes</td></tr>
+              <tr><td>Kata-kata antarmuka, bahasa mana pun</td><td class="k">ui/index.html</td><td>Tambahkan ke kedua blok; ada uji yang menegakkan kesetaraan</td></tr>
+              <tr><td>Prosa server atau bahasa baru</td><td class="k">racik/i18n.py</td><td>Tambahkan satu blok kunci; tak ada bagian lain yang bercabang</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="warn">
+          <strong>Bangun ulang setelah mengubah</strong> <code>urt.py</code>,
+          <code>tkpi.py</code>, <code>nutrition.py</code>, atau <code>prices_id.json</code> —
+          semuanya memberi makan <code>racik.db</code>, dan basis data usang akan diam-diam
+          menyajikan angka lama. Perubahan pada <code>optimizer.py</code>,
+          <code>api.py</code>, dan <code>orchestrator.py</code> berlaku setelah restart.
+        </div>
+      </section>
+
+      <p class="foot">
+        Sumber: AKG 2019 (Permenkes 28/2019) · TKPI 2020 (Kemenkes) · Isi Piringku
+        (Permenkes 41/2014) · Kemenkes <em>Pedoman Konversi Berat Matang-Mentah, BDD</em>
+        (2014) · panduan retensi dan rendemen FAO/INFOODS · pernyataan pagu per porsi BGN
+        2024–2026 · Bapanas Panel Harga / BI PIHPS · SEA-LION v4.5 (AI Singapore). Angka
+        dalam dokumen ini dibaca dari sistem yang berjalan, bukan dari ingatan.
+      </p>
+
+    </main>
+  </div>
+</div>

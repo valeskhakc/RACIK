@@ -1,0 +1,50 @@
+# Render Blueprint for Racik. On Render's dashboard: New + -> Blueprint ->
+# connect the valeskhakc/RACIK repo -> Render reads this file and proposes
+# the service below. Secret values (marked sync: false) are entered once in
+# Render's own dashboard, never committed here.
+#
+# Known limitation carried over from the Dockerfile: racik_state.db (operator
+# reviews, menu history, feedback log) lives on the container's local disk.
+# On Render's free/starter plans that disk is ephemeral, so state resets on
+# every redeploy and isn't shared if the service ever scales past one
+# instance. Fine for a demo; a real production deploy needs that store
+# moved to a managed Postgres (Render offers this) or similar.
+
+services:
+  - type: web
+    name: racik
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /api/meta
+    envVars:
+      - key: RACIK_LLM_PROVIDER
+        value: bedrock
+      # CP-SAT's search speed scales with real CPU, not wall-clock time
+      # budget alone. On free/starter's throttled vCPU, the default
+      # candidates-per-slot (220) can't reach a fully-compliant plan before
+      # the request times out. Empirically, 100 reaches the same zero
+      # relaxed-floor result in under half the CPU work — cut it further
+      # (e.g. 60) if generations still fail on your instance size.
+      - key: RACIK_CANDIDATES_PER_SLOT
+        value: "100"
+      # Scopes the location picker to only the provinces with a precomputed
+      # tray bank (scripts/precompute_trays.py) — every one of them then
+      # generates instantly with guaranteed full AKG compliance, instead of
+      # occasionally landing on a province that falls through to a live
+      # solve this host is too slow to always finish well. Local dev is
+      # unaffected (always sees every province) since this is unset there.
+      - key: RACIK_LIMIT_PROVINCES_TO_CACHE
+        value: "1"
+      - key: BEDROCK_MODEL_ID
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_SESSION_TOKEN
+        sync: false
+      - key: SEALION_API_KEY
+        sync: false

@@ -1,0 +1,27 @@
+# Derived artefact: 64 MB, rebuilt in ~30 s by scripts/build_db.py from the
+# raw sources in data/raw. A stale copy in git would be worse than none.
+data/racik.db
+
+# Operator state accumulated at runtime (reviews, menu history, stock/audit
+# records) — see racik/statedb.py. Per-deployment, never a source artefact.
+data/racik_state.db
+
+# SEA-LION translation/rewrite caches — regenerated on demand, per-deployment
+data/dish_translations.json
+data/recipe_steps_en.json
+
+# Local secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

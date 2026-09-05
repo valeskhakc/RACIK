@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "racik",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "uvicorn", "racik.api:app", "--port", "8000"],
+      "port": 8000
+    }
+  ]
+}

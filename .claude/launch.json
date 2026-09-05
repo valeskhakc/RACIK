@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "racik",
+      "runtimeExecutable": "C:\\Users\\Valeskha\\git-repositories\\RACIK\\racik\\.venv\\Scripts\\python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "--app-dir", "racik", "racik.api:app", "--port", "8000"],
+      "port": 8000
+    }
+  ]
+}

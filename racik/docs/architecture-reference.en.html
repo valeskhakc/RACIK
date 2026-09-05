@@ -1,0 +1,953 @@
+<title>Racik Engineering Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+/* ============================================================
+   Tokens — the palette is inherited from ui/index.html so this
+   document belongs to the same system as the app it describes.
+   Neutrals are biased green, never flat grey.
+   ============================================================ */
+:root{
+  --paper:#F7F3E8;
+  --surface:#FFFFFF;
+  --sunk:#EFE9D8;
+  --ink:#1F2B22;
+  --ink-soft:#4A5A4C;
+  --ink-faint:#6E7D70;
+  --leaf:#3F6B4F;
+  --leaf-deep:#2C4C38;
+  --gold:#E8A33D;
+  --gold-wash:#FDF6BA;
+  --gold-ink:#6B4E14;
+  --chili:#C0392B;
+  --chili-wash:#F6DCD8;
+  --line:#DCD4BC;
+  --line-soft:#E8E1CC;
+  --rail:rgba(63,107,79,.10);
+  --plate:#F7F3E8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12160F;
+    --surface:#1A1F16;
+    --sunk:#222819;
+    --ink:#E9E5D6;
+    --ink-soft:#B4BCAC;
+    --ink-faint:#8A9384;
+    --leaf:#86B597;
+    --leaf-deep:#A9CFB6;
+    --gold:#F0B65C;
+    --gold-wash:#2E2A16;
+    --gold-ink:#F0D8A0;
+    --chili:#E4796B;
+    --chili-wash:#33201D;
+    --line:#333A2C;
+    --line-soft:#2A3123;
+    --rail:rgba(134,181,151,.12);
+    --plate:#E8E4D6;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12160F;
+  --surface:#1A1F16;
+  --sunk:#222819;
+  --ink:#E9E5D6;
+  --ink-soft:#B4BCAC;
+  --ink-faint:#8A9384;
+  --leaf:#86B597;
+  --leaf-deep:#A9CFB6;
+  --gold:#F0B65C;
+  --gold-wash:#2E2A16;
+  --gold-ink:#F0D8A0;
+  --chili:#E4796B;
+  --chili-wash:#33201D;
+  --line:#333A2C;
+  --line-soft:#2A3123;
+  --rail:rgba(134,181,151,.12);
+  --plate:#E8E4D6;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:2rem;}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important;}
+}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;font-weight:600;margin:0;text-wrap:balance;letter-spacing:-.012em;}
+code,.mono,th,td.num{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;}
+a{color:var(--leaf);text-underline-offset:3px;}
+:focus-visible{outline:2.5px solid var(--gold);outline-offset:3px;border-radius:2px;}
+
+/* ---------------- shell ---------------- */
+.wrap{max-width:1220px;margin:0 auto;padding:0 clamp(18px,4vw,40px) 100px;}
+.layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:clamp(28px,5vw,60px);align-items:start;}
+@media (max-width:940px){.layout{grid-template-columns:1fr;}}
+
+/* ---------------- masthead ---------------- */
+.mast{padding:clamp(38px,7vw,72px) 0 30px;border-bottom:2px solid var(--ink);}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--leaf);
+}
+.mast h1{font-size:clamp(38px,6.6vw,66px);line-height:1.02;margin:14px 0 0;}
+.mast h1 em{font-style:normal;color:var(--leaf);}
+.mast .standfirst{
+  font-size:clamp(16px,2vw,18.5px);color:var(--ink-soft);
+  max-width:64ch;margin:18px 0 0;
+}
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));
+  gap:1px;background:var(--line);border:1px solid var(--line);margin-top:34px;
+}
+.stat{background:var(--paper);padding:13px 15px;}
+.stat b{
+  display:block;font-family:'JetBrains Mono',monospace;font-size:21px;
+  font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+}
+.stat span{display:block;font-size:11.5px;color:var(--ink-faint);margin-top:2px;line-height:1.35;}
+
+/* ---------------- contents rail ---------------- */
+nav.toc{position:sticky;top:26px;font-size:13px;}
+@media (max-width:940px){
+  nav.toc{position:static;margin:26px 0 8px;padding-bottom:18px;border-bottom:1px solid var(--line);}
+}
+nav.toc .lbl{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  padding-bottom:9px;display:block;
+}
+nav.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;}
+@media (max-width:940px){nav.toc ol{flex-direction:row;flex-wrap:wrap;gap:6px;}}
+nav.toc a{
+  display:block;padding:5px 0 5px 11px;color:var(--ink-soft);
+  text-decoration:none;border-left:2px solid var(--line);
+}
+nav.toc a:hover{color:var(--leaf);border-left-color:var(--leaf);background:var(--rail);}
+@media (max-width:940px){
+  nav.toc a{border:1px solid var(--line);border-radius:2px;padding:4px 9px;}
+}
+nav.toc .n{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink-faint);
+  margin-right:7px;
+}
+
+/* ---------------- sections ---------------- */
+section{padding-top:46px;}
+section > h2{
+  font-size:clamp(24px,3.2vw,31px);line-height:1.14;
+  padding-bottom:11px;border-bottom:1px solid var(--ink);
+}
+.sec-n{
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+  color:var(--leaf);letter-spacing:.05em;margin-right:12px;
+}
+section > p{max-width:72ch;color:var(--ink-soft);}
+section > p.lede{color:var(--ink);font-size:17px;}
+h3{font-size:19px;margin:32px 0 8px;}
+h4{font-size:15.5px;margin:22px 0 6px;}
+
+/* ---------------- the diagram plate ---------------- */
+figure{margin:26px 0 8px;}
+.plate{
+  background:var(--plate);border:1.5px solid var(--line);
+  padding:14px;overflow-x:auto;
+}
+.plate img{display:block;width:100%;min-width:760px;height:auto;}
+figcaption{
+  font-size:12.5px;color:var(--ink-faint);margin-top:10px;max-width:72ch;
+}
+
+/* ---------------- boxes: echo the diagram's idiom ----------------
+   Sharp corners + hairline border + pale wash, so the document reads
+   as part of the same drawing as architecture.svg.                  */
+.spec{
+  background:var(--gold-wash);border:1.5px solid var(--gold);
+  padding:15px 17px;margin:22px 0;color:var(--gold-ink);font-size:14.5px;
+}
+.spec b{color:var(--gold-ink);}
+.warn{
+  background:var(--chili-wash);border-left:3px solid var(--chili);
+  padding:13px 16px;margin:20px 0;font-size:14.5px;
+}
+.rule{
+  border:1.5px solid var(--ink);background:var(--surface);
+  padding:17px 19px;margin:24px 0;
+}
+.rule .k{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--leaf);
+}
+.rule p{margin:7px 0 0;font-size:15px;}
+
+/* ---------------- module cards ---------------- */
+.mods{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px;}
+.mod{background:var(--surface);padding:16px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;}
+.mod .path{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--leaf-deep);}
+.mod .loc{
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-faint);
+  font-variant-numeric:tabular-nums;white-space:nowrap;align-self:start;padding-top:3px;
+}
+.mod .what{grid-column:1/-1;font-size:14.5px;color:var(--ink-soft);margin-top:2px;}
+.mod .surf{grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin-top:7px;line-height:1.7;word-break:break-word;}
+.mod .why{grid-column:1/-1;font-size:13.5px;margin-top:9px;padding-left:11px;border-left:2px solid var(--gold);color:var(--ink);}
+
+/* ---------------- pipeline (a real sequence, so numbered) ---------------- */
+.pipe{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px;}
+.step{background:var(--surface);padding:15px 18px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:14px;}
+.step .i{
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+  color:var(--surface);background:var(--leaf);width:26px;height:26px;
+  display:grid;place-items:center;
+}
+.step h4{margin:0 0 3px;font-size:16px;}
+.step p{margin:0;font-size:14px;color:var(--ink-soft);}
+.step code{font-size:12.5px;color:var(--leaf-deep);}
+
+/* ---------------- tables ---------------- */
+.tw{overflow-x:auto;margin:20px 0;border:1px solid var(--line);}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:520px;background:var(--surface);}
+th{
+  text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-faint);padding:10px 13px;
+  border-bottom:1.5px solid var(--line);background:var(--sunk);white-space:nowrap;
+}
+td{padding:9px 13px;border-bottom:1px solid var(--line-soft);vertical-align:top;}
+tbody tr:last-child td{border-bottom:none;}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+td.k{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--leaf-deep);white-space:nowrap;}
+tbody tr:hover td{background:var(--rail);}
+.tag{
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;
+  font-weight:700;letter-spacing:.06em;padding:2px 7px;border:1px solid currentColor;
+}
+.tag.get{color:var(--leaf);}
+.tag.post{color:var(--gold-ink);background:var(--gold-wash);border-color:var(--gold);}
+.ok{color:var(--leaf);font-weight:600;}
+.bad{color:var(--chili);font-weight:600;}
+
+ul.tight{margin:12px 0;padding-left:20px;max-width:72ch;color:var(--ink-soft);}
+ul.tight li{margin-bottom:7px;}
+ul.tight li b,ul.tight li strong{color:var(--ink);}
+
+pre{
+  background:var(--surface);border:1px solid var(--line);padding:14px 16px;
+  overflow-x:auto;font-size:12.5px;line-height:1.7;margin:18px 0;
+}
+pre code{color:var(--ink);}
+p code,li code,td code{
+  background:var(--sunk);padding:1.5px 5px;font-size:.88em;border:1px solid var(--line-soft);
+}
+
+.foot{
+  margin-top:60px;padding-top:22px;border-top:2px solid var(--ink);
+  font-size:13px;color:var(--ink-faint);max-width:72ch;
+}
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div class="eyebrow">Engineering reference · internal</div>
+    <h1>Racik <em>architecture</em></h1>
+    <p class="standfirst">
+      An AKG-grounded, cost-constrained menu planner for Indonesia's Makan Bergizi
+      Gratis program. 18,133 regional recipes become costed, nutrition-bearing
+      dishes; an integer programme selects the menu; SEA-LION handles the language.
+      It ships in Indonesian and English from one codebase. This is the map of how that works, and where it is weak.
+    </p>
+    <div class="stats">
+      <div class="stat"><b>16</b><span>Python modules</span></div>
+      <div class="stat"><b>6,820</b><span>lines of Python</span></div>
+      <div class="stat"><b>137</b><span>tests, all passing</span></div>
+      <div class="stat"><b>18,008</b><span>costed dishes</span></div>
+      <div class="stat"><b>257,887</b><span>audited ingredient lines</span></div>
+      <div class="stat"><b>1,149</b><span>TKPI food records</span></div>
+      <div class="stat"><b>2</b><span>languages, one codebase</span></div>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <nav class="toc">
+      <span class="lbl">Contents</span>
+      <ol>
+        <li><a href="#overview"><span class="n">01</span>System</a></li>
+        <li><a href="#lifecycle"><span class="n">02</span>Request paths</a></li>
+        <li><a href="#pipeline"><span class="n">03</span>Build pipeline</a></li>
+        <li><a href="#modules"><span class="n">04</span>Modules</a></li>
+        <li><a href="#data"><span class="n">05</span>Data model</a></li>
+        <li><a href="#api"><span class="n">06</span>HTTP API</a></li>
+        <li><a href="#orchestrator"><span class="n">07</span>Orchestrator</a></li>
+        <li><a href="#rubric"><span class="n">7b</span>Candidate rubric</a></li>
+        <li><a href="#deliverable"><span class="n">7c</span>Report &amp; translation</a></li>
+        <li><a href="#constants"><span class="n">08</span>Policy constants</a></li>
+        <li><a href="#results"><span class="n">09</span>Measured results</a></li>
+        <li><a href="#tests"><span class="n">10</span>Test suite</a></li>
+        <li><a href="#limits"><span class="n">11</span>Known limits</a></li>
+        <li><a href="#bilingual"><span class="n">12</span>Bilingual builds</a></li>
+        <li><a href="#runbook"><span class="n">13</span>Runbook</a></li>
+      </ol>
+    </nav>
+
+    <main>
+
+      <!-- ============ 01 ============ -->
+      <section id="overview">
+        <h2><span class="sec-n">01</span>System</h2>
+        <p class="lede">
+          Racik has one architectural commitment, and everything else follows from it:
+          <strong>the deterministic engine owns every number, and the language model owns none of them.</strong>
+        </p>
+        <p>
+          An SPPG operator writes ordinary Indonesian. SEA-LION reads the intent and
+          decides which tools to call. Those tools run a CP-SAT optimiser over a corpus
+          of dishes whose nutrition came from TKPI 2020 and whose cost came from a
+          priced ingredient table. The answer is assembled from tool output, and every
+          response carries the trace of calls that produced it.
+        </p>
+
+        <figure>
+          <div class="plate">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAwIDkwMCIgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiI+CiAgPGRlZnM+CiAgICA8bWFya2VyIGlkPSJhcnJvdyIgdmlld0JveD0iMCAwIDEwIDEwIiByZWZYPSI5LjUiIHJlZlk9IjUiCiAgICAgICAgICAgIG1hcmtlcldpZHRoPSI3IiBtYXJrZXJIZWlnaHQ9IjciIG9yaWVudD0iYXV0by1zdGFydC1yZXZlcnNlIj4KICAgICAgPHBhdGggZD0iTTAsMCBMMTAsNSBMMCwxMCB6IiBmaWxsPSIjMTExMTExIi8+CiAgICA8L21hcmtlcj4KICAgIDxzdHlsZT4KICAgICAgLmJveCAgIHsgZmlsbDojRkRGNkJBOyBzdHJva2U6IzExMTExMTsgc3Ryb2tlLXdpZHRoOjIuNTsgfQogICAgICAuY2hpcCAgeyBzdHJva2U6IzExMTExMTsgc3Ryb2tlLXdpZHRoOjEuNjsgc3Ryb2tlLWRhc2hhcnJheTo0IDM7IH0KICAgICAgLmdycCAgIHsgZmlsbDojRkRGNkJBOyBzdHJva2U6IzExMTExMTsgc3Ryb2tlLXdpZHRoOjIuNTsgc3Ryb2tlLWRhc2hhcnJheTo3IDU7IH0KICAgICAgLnN1YiAgIHsgZmlsbDojRkRGNkJBOyBzdHJva2U6IzExMTExMTsgc3Ryb2tlLXdpZHRoOjI7IHN0cm9rZS1kYXNoYXJyYXk6NSA0OyB9CiAgICAgIC5mbG93ICB7IHN0cm9rZTojMTExMTExOyBzdHJva2Utd2lkdGg6MzsgZmlsbDpub25lOyBtYXJrZXItZW5kOnVybCgjYXJyb3cpOyB9CiAgICAgIC50ICAgICB7IGZpbGw6IzExMTExMTsgfQogICAgICAubGJsICAgeyBmaWxsOiMxMTExMTE7IGZvbnQtc2l6ZToxN3B4OyB9CiAgICAgIC5jYXAgICB7IGZpbGw6IzExMTExMTsgZm9udC1zaXplOjE4cHg7IGZvbnQtd2VpZ2h0OmJvbGQ7IH0KICAgICAgLm5vdGUgIHsgZmlsbDojM2YzZjQ2OyBmb250LXNpemU6MTNweDsgfQogICAgICAuYnVsICAgeyBmaWxsOiMxMTExMTE7IGZvbnQtc2l6ZToxM3B4OyB9CiAgICAgIC5sbiAgICB7IHN0cm9rZTojMUUzQThBOyBzdHJva2Utd2lkdGg6Mi41OyBzdHJva2UtbGluZWNhcDpyb3VuZDsgfQogICAgICAuYmx1ZSAgeyBmaWxsOm5vbmU7IHN0cm9rZTojMjU2M0VCOyBzdHJva2Utd2lkdGg6My41OyBzdHJva2UtbGluZWpvaW46cm91bmQ7IH0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgoKICA8cmVjdCB3aWR0aD0iMTYwMCIgaGVpZ2h0PSI5MDAiIGZpbGw9IiNGRkZGRkYiLz4KICA8dGV4dCB4PSI4MDAiIHk9Ijc4IiBjbGFzcz0idCIgZm9udC1zaXplPSI0MiIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFyY2hpdGVjdHVyZTwvdGV4dD4KCiAgPCEtLSA9PT09PT09PT09PT09PT09PSBTUFBHIG9wZXJhdG9yID09PT09PT09PT09PT09PT09IC0tPgogIDxnPgogICAgPGNpcmNsZSBjeD0iMTA1IiBjeT0iMTc4IiByPSIzMyIgZmlsbD0iI0Y1ODIyMCIvPgogICAgPHBhdGggZD0iTTU2LDI2OCBDNTYsMjE0IDE1NCwyMTQgMTU0LDI2OCBaIiBmaWxsPSIjRjU4MjIwIi8+CiAgICA8dGV4dCB4PSIxMDUiIHk9IjI5OSIgY2xhc3M9ImxibCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U1BQRyBPcGVyYXRvcjwvdGV4dD4KICA8L2c+CgogIDwhLS0gb3BlcmF0b3IgLT4gUkFDSUsgLS0+CiAgPHRleHQgeD0iMjg4IiB5PSIxOTYiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkJhaGFzYSBJbmRvbmVzaWE8L3RleHQ+CiAgPHRleHQgeD0iMjg4IiB5PSIyMTkiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPihqZW5qYW5nIMK3IHBvcnNpIMK3IHBhZ3UpPC90ZXh0PgogIDxsaW5lIHgxPSIxNzIiIHkxPSIyNDAiIHgyPSIzOTIiIHkyPSIyNDAiIGNsYXNzPSJmbG93Ii8+CgogIDxyZWN0IHg9IjQwMCIgeT0iMTk5IiB3aWR0aD0iMTY4IiBoZWlnaHQ9IjgyIiBjbGFzcz0iYm94Ii8+CiAgPHRleHQgeD0iNDg0IiB5PSIyMzIiIGNsYXNzPSJ0IiBmb250LXNpemU9IjI1IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UkFDSUs8L3RleHQ+CiAgPHRleHQgeD0iNDg0IiB5PSIyNTgiIGNsYXNzPSJ0IiBmb250LXNpemU9IjEyLjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNFQS1MSU9OIG9yY2hlc3RyYXRvcjwvdGV4dD4KCiAgPCEtLSBTRUEtTElPTiBtb2RlbCwgZmVlZGluZyB0aGUgb3JjaGVzdHJhdG9yIGJveCAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0NDcsODApIj4KICAgIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI3NCIgaGVpZ2h0PSI1MiIgcng9IjkiIGZpbGw9IiNEQkVBRkUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgICA8Y2lyY2xlIGN4PSIyNCIgY3k9IjIxIiByPSI1IiBmaWxsPSIjMjU2M0VCIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSIyMSIgcj0iNSIgZmlsbD0iIzI1NjNFQiIvPgogICAgPHBhdGggZD0iTTIyLDM1IHExNSwxMSAzMCwwIiBmaWxsPSJub25lIiBzdHJva2U9IiMyNTYzRUIiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNMTQsMCB2LTkgTTYwLDAgdi05IiBzdHJva2U9IiMyNTYzRUIiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8Y2lyY2xlIGN4PSIxNCIgY3k9Ii0xMiIgcj0iNCIgZmlsbD0iIzI1NjNFQiIvPjxjaXJjbGUgY3g9IjYwIiBjeT0iLTEyIiByPSI0IiBmaWxsPSIjMjU2M0VCIi8+CiAgPC9nPgogIDx0ZXh0IHg9IjQ4NCIgeT0iMTUyIiBjbGFzcz0iY2FwIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TRUEtTElPTiB2NC41PC90ZXh0PgogIDx0ZXh0IHg9IjQ4NCIgeT0iMTcxIiBjbGFzcz0ibm90ZSIgZm9udC1zaXplPSIxMS41IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Rd2VuLTI3Qi1JVCDCtyBmdW5jdGlvbiBjYWxsaW5nPC90ZXh0PgoKICA8IS0tIFJBQ0lLIC0+IGNhbmRpZGF0ZSBmaWx0ZXIgLS0+CiAgPHRleHQgeD0iNzIyIiB5PSIxOTYiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJlcXVlc3QgQWNjZXNzaW5nPC90ZXh0PgogIDx0ZXh0IHg9IjcyMiIgeT0iMjE5IiBjbGFzcz0ibGJsIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Gb29kICZhbXA7IFJlY2lwZSBEYXRhPC90ZXh0PgogIDxsaW5lIHgxPSI1NzQiIHkxPSIyNDAiIHgyPSI4NjYiIHkyPSIyNDAiIGNsYXNzPSJmbG93Ii8+CgogIDxyZWN0IHg9Ijg3MiIgeT0iMTk5IiB3aWR0aD0iMjEyIiBoZWlnaHQ9IjgyIiBjbGFzcz0iYm94Ii8+CiAgPHRleHQgeD0iOTc4IiB5PSIyMjYiIGNsYXNzPSJ0IiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q2FuZGlkYXRlIEZpbHRlcjwvdGV4dD4KICA8dGV4dCB4PSI5NzgiIHk9IjI0NiIgY2xhc3M9Im5vdGUiIGZvbnQtc2l6ZT0iMTEuNSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RzHigJNHNSBnZXJiYW5nIGtlcmFzPC90ZXh0PgogIDx0ZXh0IHg9Ijk3OCIgeT0iMjYyIiBjbGFzcz0ibm90ZSIgZm9udC1zaXplPSIxMS41IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5za29yOiBnaXppL3J1cGlhaCDDlzwvdGV4dD4KICA8dGV4dCB4PSI5NzgiIHk9IjI3NSIgY2xhc3M9Im5vdGUiIGZvbnQtc2l6ZT0iMTEuNSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+ZGFlcmFoIMOXIG11dHUgZGF0YTwvdGV4dD4KCiAgPCEtLSA9PT09PT09PT09PT09PT09PSByZWNpcGUgY29ycHVzICh0b3AgcmlnaHQpID09PT09PT09PT09PT09PT09IC0tPgogIDxnPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTE5OCwxNTApIj4KICAgICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjU2IiBoZWlnaHQ9IjQ2IiByeD0iNCIgZmlsbD0iI0RCRUFGRSIgc3Ryb2tlPSIjMUUzQThBIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogICAgICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTUiIGhlaWdodD0iNDYiIHJ4PSI0IiBmaWxsPSIjMUUzQThBIi8+CiAgICAgIDxsaW5lIHgxPSIyNCIgeTE9IjE0IiB4Mj0iNDciIHkyPSIxNCIgY2xhc3M9ImxuIi8+PGxpbmUgeDE9IjI0IiB5MT0iMjQiIHgyPSI0NyIgeTI9IjI0IiBjbGFzcz0ibG4iLz4KICAgICAgPGxpbmUgeDE9IjI0IiB5MT0iMzQiIHgyPSIzOSIgeTI9IjM0IiBjbGFzcz0ibG4iLz4KICAgIDwvZz4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzMDAsMTUwKSI+CiAgICAgIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0NiIgcng9IjQiIGZpbGw9IiNEQkVBRkUiIHN0cm9rZT0iIzFFM0E4QSIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICAgICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjE1IiBoZWlnaHQ9IjQ2IiByeD0iNCIgZmlsbD0iIzFFM0E4QSIvPgogICAgICA8bGluZSB4MT0iMjQiIHkxPSIxNCIgeDI9IjQ3IiB5Mj0iMTQiIGNsYXNzPSJsbiIvPjxsaW5lIHgxPSIyNCIgeTE9IjI0IiB4Mj0iNDciIHkyPSIyNCIgY2xhc3M9ImxuIi8+CiAgICAgIDxsaW5lIHgxPSIyNCIgeTE9IjM0IiB4Mj0iMzkiIHkyPSIzNCIgY2xhc3M9ImxuIi8+CiAgICA8L2c+CiAgICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMjQ5LDIxMikiPgogICAgICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNTYiIGhlaWdodD0iNDYiIHJ4PSI0IiBmaWxsPSIjREJFQUZFIiBzdHJva2U9IiMxRTNBOEEiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgICAgIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxNSIgaGVpZ2h0PSI0NiIgcng9IjQiIGZpbGw9IiMxRTNBOEEiLz4KICAgICAgPGxpbmUgeDE9IjI0IiB5MT0iMTQiIHgyPSI0NyIgeTI9IjE0IiBjbGFzcz0ibG4iLz48bGluZSB4MT0iMjQiIHkxPSIyNCIgeDI9IjQ3IiB5Mj0iMjQiIGNsYXNzPSJsbiIvPgogICAgICA8bGluZSB4MT0iMjQiIHkxPSIzNCIgeDI9IjM5IiB5Mj0iMzQiIGNsYXNzPSJsbiIvPgogICAgPC9nPgogICAgPHRleHQgeD0iMTI4MSIgeT0iMjkyIiBjbGFzcz0iY2FwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5SZWdpb25hbCBSZWNpcGUgQ29ycHVzPC90ZXh0PgogICAgPHRleHQgeD0iMTI4MSIgeT0iMzExIiBjbGFzcz0ibm90ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U1VNQkVSIMK3IDE4LjEzMyByZXNlcCBtZW50YWggwrcgMzQgcHJvdmluc2k8L3RleHQ+CiAgPC9nPgoKICA8IS0tIGVucmljaG1lbnQ6IHRoZSBzb3VyY2UgY29ycHVzIGlzIHRyYW5zZm9ybWVkLCBub3QgbWVyZWx5IHJlbmFtZWQgLS0+CiAgPGxpbmUgeDE9IjEyODEiIHkxPSIzMjYiIHgyPSIxMjgxIiB5Mj0iNDA0IiBjbGFzcz0iZmxvdyIvPgogIDx0ZXh0IHg9IjEyNjgiIHk9IjM0NSIgY2xhc3M9Im5vdGUiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJlbmQiPlVSVCDihpIgZ3JhbTwvdGV4dD4KICA8dGV4dCB4PSIxMjY4IiB5PSIzNjIiIGNsYXNzPSJub3RlIiBmb250LXNpemU9IjEyIiB0ZXh0LWFuY2hvcj0iZW5kIj5US1BJICsgQkREPC90ZXh0PgogIDx0ZXh0IHg9IjEyNjgiIHk9IjM3OSIgY2xhc3M9Im5vdGUiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJlbmQiPmhhcmdhIFJwL2tnPC90ZXh0PgogIDx0ZXh0IHg9IjEyNjgiIHk9IjM5NiIgY2xhc3M9Im5vdGUiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJlbmQiPmtsYXNpZmlrYXNpIHNsb3Q8L3RleHQ+CgogIDwhLS0gPT09PT09PT09PT09PT09PT0gY29zdGVkIGRpc2ggaW5kZXggKGJ5IHRyYXkgc2xvdCkgPT09PT09PT09PT09PT09PT0gLS0+CiAgPHJlY3QgeD0iMTEwMCIgeT0iNDEwIiB3aWR0aD0iMzYyIiBoZWlnaHQ9IjEwNCIgY2xhc3M9ImJveCIvPgogIDx0ZXh0IHg9IjEyODEiIHk9IjQzNyIgY2xhc3M9InQiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Db3N0ZWQgRGlzaCBJbmRleDwvdGV4dD4KICA8dGV4dCB4PSIxMjgxIiB5PSI0NTQiIGNsYXNzPSJub3RlIiBmb250LXNpemU9IjExIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xOC4wMDggaGlkYW5nYW4gYmVyYmlheWEsIHBlciBzbG90IG5hbXBhbjwvdGV4dD4KICA8ZyB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBjbGFzcz0idCI+CiAgICA8cmVjdCB4PSIxMTA3IiB5PSI0NjIiIHdpZHRoPSI2NiIgaGVpZ2h0PSI0MiIgY2xhc3M9ImNoaXAiIGZpbGw9IiNCN0U0QzciLz4KICAgIDx0ZXh0IHg9IjExNDAiIHk9IjQ3OCIgZm9udC1zaXplPSIxMCI+aGV3YW5pPC90ZXh0Pjx0ZXh0IHg9IjExNDAiIHk9IjQ5NCIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9ImJvbGQiPjEzLjUyNTwvdGV4dD4KICAgIDxyZWN0IHg9IjExNzciIHk9IjQ2MiIgd2lkdGg9IjY2IiBoZWlnaHQ9IjQyIiBjbGFzcz0iY2hpcCIgZmlsbD0iI0I3RTRDNyIvPgogICAgPHRleHQgeD0iMTIxMCIgeT0iNDc4IiBmb250LXNpemU9IjEwIj5uYWJhdGk8L3RleHQ+PHRleHQgeD0iMTIxMCIgeT0iNDk0IiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCI+My4wNTE8L3RleHQ+CiAgICA8cmVjdCB4PSIxMjQ3IiB5PSI0NjIiIHdpZHRoPSI2NiIgaGVpZ2h0PSI0MiIgY2xhc3M9ImNoaXAiIGZpbGw9IiNCN0U0QzciLz4KICAgIDx0ZXh0IHg9IjEyODAiIHk9IjQ3OCIgZm9udC1zaXplPSIxMCI+c2F5dXI8L3RleHQ+PHRleHQgeD0iMTI4MCIgeT0iNDk0IiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iYm9sZCI+ODI2PC90ZXh0PgogICAgPHJlY3QgeD0iMTMxNyIgeT0iNDYyIiB3aWR0aD0iNjYiIGhlaWdodD0iNDIiIGNsYXNzPSJjaGlwIiBmaWxsPSIjRjhDOENFIi8+CiAgICA8dGV4dCB4PSIxMzUwIiB5PSI0NzgiIGZvbnQtc2l6ZT0iMTAiPnBva29rPC90ZXh0Pjx0ZXh0IHg9IjEzNTAiIHk9IjQ5NCIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9ImJvbGQiPjQyOTwvdGV4dD4KICAgIDxyZWN0IHg9IjEzODciIHk9IjQ2MiIgd2lkdGg9IjY2IiBoZWlnaHQ9IjQyIiBjbGFzcz0iY2hpcCIgZmlsbD0iI0Y4QzhDRSIvPgogICAgPHRleHQgeD0iMTQyMCIgeT0iNDc4IiBmb250LXNpemU9IjEwIj5idWFoPC90ZXh0Pjx0ZXh0IHg9IjE0MjAiIHk9IjQ5NCIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9ImJvbGQiPjE3NzwvdGV4dD4KICA8L2c+CgogIDwhLS0gY29zdGVkIGluZGV4IC0+IGVuZ2luZSAtLT4KICA8bGluZSB4MT0iMTA5NCIgeTE9IjQ2MiIgeDI9IjEwNTgiIHkyPSI0NjIiIGNsYXNzPSJmbG93Ii8+CgogIDwhLS0gPT09PT09PT09PT09PT09PT0gbnV0cml0aW9uICYgY29zdCBlbmdpbmUgPT09PT09PT09PT09PT09PT0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTIyLDQwNCkiPgogICAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEyMiIgaGVpZ2h0PSI4OCIgcng9IjciIGNsYXNzPSJibHVlIiBmaWxsPSIjRkZGRkZGIi8+CiAgICA8cmVjdCB4PSIxNCIgeT0iMTUiIHdpZHRoPSI0MSIgaGVpZ2h0PSI1NSIgcng9IjMiIGZpbGw9IiNEQkVBRkUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICA8bGluZSB4MT0iMjEiIHkxPSIyNyIgeDI9IjQ4IiB5Mj0iMjciIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8bGluZSB4MT0iMjEiIHkxPSIzOCIgeDI9IjQ4IiB5Mj0iMzgiIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8bGluZSB4MT0iMjEiIHkxPSI0OSIgeDI9IjQxIiB5Mj0iNDkiIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8cmVjdCB4PSI2MyIgeT0iMTUiIHdpZHRoPSI0MSIgaGVpZ2h0PSI1NSIgcng9IjMiIGZpbGw9IiNEQkVBRkUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICA8bGluZSB4MT0iNzAiIHkxPSIyNyIgeDI9Ijk3IiB5Mj0iMjciIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8bGluZSB4MT0iNzAiIHkxPSIzOCIgeDI9Ijk3IiB5Mj0iMzgiIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8cGF0aCBkPSJNNTIsODggVjEwMSBNNzAsODggVjEwMSIgY2xhc3M9ImJsdWUiIHN0cm9rZS13aWR0aD0iMyIvPgogICAgPGxpbmUgeDE9IjQwIiB5MT0iMTAzIiB4Mj0iODIiIHkyPSIxMDMiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxjaXJjbGUgY3g9IjEwMCIgY3k9Ijc0IiByPSIyNSIgZmlsbD0iI0ZGRkZGRiIgY2xhc3M9ImJsdWUiLz4KICAgIDxyZWN0IHg9Ijg5IiB5PSI2MyIgd2lkdGg9IjIyIiBoZWlnaHQ9IjI0IiByeD0iMiIgZmlsbD0iI0RCRUFGRSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjIiLz4KICAgIDxsaW5lIHgxPSIxMTkiIHkxPSI5MyIgeDI9IjEzMSIgeTI9IjEwNSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDwvZz4KICA8dGV4dCB4PSI5ODMiIHk9IjU0MCIgY2xhc3M9ImNhcCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UmFjaWsgTnV0cml0aW9uICZhbXA7PC90ZXh0PgogIDx0ZXh0IHg9Ijk4MyIgeT0iNTYyIiBjbGFzcz0iY2FwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Db3N0IEVuZ2luZTwvdGV4dD4KCiAgPCEtLSBlbmdpbmUgLT4gbWVudSBwbGFuIC0tPgogIDx0ZXh0IHg9Ijc4MyIgeT0iNDE4IiBjbGFzcz0ibGJsIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5HZW5lcmF0aW5nIE1lbnU8L3RleHQ+CiAgPHRleHQgeD0iNzgzIiB5PSI0NDEiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPnVuZGVyIENQLVNBVDwvdGV4dD4KICA8bGluZSB4MT0iOTEyIiB5MT0iNDY2IiB4Mj0iNjY4IiB5Mj0iNDY2IiBjbGFzcz0iZmxvdyIvPgoKICA8IS0tID09PT09PT09PT09PT09PT09IG1lbnUgcGxhbiA9PT09PT09PT09PT09PT09PSAtLT4KICA8cmVjdCB4PSI0MDQiIHk9IjQyNCIgd2lkdGg9IjI1OCIgaGVpZ2h0PSI5MiIgY2xhc3M9ImJveCIvPgogIDx0ZXh0IHg9IjUzMyIgeT0iNDUyIiBjbGFzcz0idCIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1lbnUgUGxhbjwvdGV4dD4KICA8ZyBmb250LXNpemU9IjEwLjUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ0Ij4KICAgIDxyZWN0IHg9IjQxNCIgeT0iNDY0IiB3aWR0aD0iNDciIGhlaWdodD0iMzgiIGNsYXNzPSJjaGlwIiBmaWxsPSIjQjdFNEM3Ii8+PHRleHQgeD0iNDM3LjUiIHk9IjQ4OCI+UG9rb2s8L3RleHQ+CiAgICA8cmVjdCB4PSI0NjUiIHk9IjQ2NCIgd2lkdGg9IjQ3IiBoZWlnaHQ9IjM4IiBjbGFzcz0iY2hpcCIgZmlsbD0iI0I3RTRDNyIvPjx0ZXh0IHg9IjQ4OC41IiB5PSI0ODgiPkhld2FuaTwvdGV4dD4KICAgIDxyZWN0IHg9IjUxNiIgeT0iNDY0IiB3aWR0aD0iNDciIGhlaWdodD0iMzgiIGNsYXNzPSJjaGlwIiBmaWxsPSIjQjdFNEM3Ii8+PHRleHQgeD0iNTM5LjUiIHk9IjQ4OCI+TmFiYXRpPC90ZXh0PgogICAgPHJlY3QgeD0iNTY3IiB5PSI0NjQiIHdpZHRoPSI0MiIgaGVpZ2h0PSIzOCIgY2xhc3M9ImNoaXAiIGZpbGw9IiNGOEM4Q0UiLz48dGV4dCB4PSI1ODgiIHk9IjQ4OCI+U2F5dXI8L3RleHQ+CiAgICA8cmVjdCB4PSI2MTMiIHk9IjQ2NCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjM4IiBjbGFzcz0iY2hpcCIgZmlsbD0iI0Y4QzhDRSIvPjx0ZXh0IHg9IjYzMyIgeT0iNDg4Ij5CdWFoPC90ZXh0PgogIDwvZz4KCiAgPCEtLSBtZW51IHBsYW4gLT4gcmVwb3J0IC0tPgogIDxsaW5lIHgxPSI1MzMiIHkxPSI1MjIiIHgyPSI1MzMiIHkyPSI1OTYiIGNsYXNzPSJmbG93Ii8+CiAgPHRleHQgeD0iNTU2IiB5PSI1NjYiIGNsYXNzPSJsYmwiPkNvbXBsaWFuY2UgQW5hbHlzaXM8L3RleHQ+CgogIDwhLS0gPT09PT09PT09PT09PT09PT0gY29tcGxpYW5jZSAmIHByb2N1cmVtZW50IHJlcG9ydCA9PT09PT09PT09PT09PT09PSAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1MzMsNjc4KSI+CiAgICA8Y2lyY2xlIGN4PSIwIiBjeT0iMCIgcj0iNzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzkzQzVGRCIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1kYXNoYXJyYXk9IjcgNyIvPgogICAgPHJlY3QgeD0iLTM2IiB5PSItNDYiIHdpZHRoPSI3MiIgaGVpZ2h0PSI5MiIgcng9IjciIGZpbGw9IiNEQkVBRkUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgICA8cmVjdCB4PSItMTUiIHk9Ii01NSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzI1NjNFQiIvPgogICAgPHBhdGggZD0iTS0yNCwtMjAgbDcsNyBsMTQsLTE0IiBmaWxsPSJub25lIiBzdHJva2U9IiMyNTYzRUIiIHN0cm9rZS13aWR0aD0iMy41IgogICAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgICA8bGluZSB4MT0iNiIgeTE9Ii0xNiIgeDI9IjI2IiB5Mj0iLTE2IiBjbGFzcz0ibG4iIHN0cm9rZT0iIzI1NjNFQiIvPgogICAgPHBhdGggZD0iTS0yNCw2IGw3LDcgbDE0LC0xNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjMuNSIKICAgICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogICAgPGxpbmUgeDE9IjYiIHkxPSIxMCIgeDI9IjI2IiB5Mj0iMTAiIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8cGF0aCBkPSJNLTI0LDMyIGw3LDcgbDE0LC0xNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjMuNSIKICAgICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogICAgPGxpbmUgeDE9IjYiIHkxPSIzNiIgeDI9IjI2IiB5Mj0iMzYiIGNsYXNzPSJsbiIgc3Ryb2tlPSIjMjU2M0VCIi8+CiAgICA8Y2lyY2xlIGN4PSItNjIiIGN5PSItMzQiIHI9IjE1IiBmaWxsPSIjQkZEQkZFIiBzdHJva2U9IiMyNTYzRUIiIHN0cm9rZS13aWR0aD0iMi41Ii8+CiAgICA8dGV4dCB4PSItNjIiIHk9Ii0yOSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMxRTNBOEEiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJwPC90ZXh0PgogICAgPGNpcmNsZSBjeD0iNjIiIGN5PSI0MCIgcj0iMTUiIGZpbGw9IiNCRkRCRkUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICAgIDxwYXRoIGQ9Ik01Niw0MCBxNiwtMTEgMTIsLTYgcS0yLDEwIC0xMiw2IHoiIGZpbGw9IiMyNTYzRUIiLz4KICAgIDxjaXJjbGUgY3g9IjYwIiBjeT0iLTQ2IiByPSIxMyIgZmlsbD0iI0JGREJGRSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogICAgPHBhdGggZD0iTTU1LC00NiBsNCw0IGw3LC04IiBmaWxsPSJub25lIiBzdHJva2U9IiMyNTYzRUIiIHN0cm9rZS13aWR0aD0iMi44IgogICAgICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPC9nPgogIDx0ZXh0IHg9IjUzMyIgeT0iNzkyIiBjbGFzcz0iY2FwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5SYWNpayBDb21wbGlhbmNlICZhbXA7PC90ZXh0PgogIDx0ZXh0IHg9IjUzMyIgeT0iODE0IiBjbGFzcz0iY2FwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Qcm9jdXJlbWVudCBSZXBvcnQ8L3RleHQ+CgogIDwhLS0gPT09PT09PT09PT09PT09PT0gZGF0YWJhc2UgPT09PT09PT09PT09PT09PT0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTI1LDY0MikiPgogICAgPHBhdGggZD0iTTAsMTQgVjcyIGE1NiwxNSAwIDAgMCAxMTIsMCBWMTQiIGZpbGw9IiNGRkZGRkYiIGNsYXNzPSJibHVlIi8+CiAgICA8ZWxsaXBzZSBjeD0iNTYiIGN5PSIxNCIgcng9IjU2IiByeT0iMTUiIGZpbGw9IiNGRkZGRkYiIGNsYXNzPSJibHVlIi8+CiAgICA8cGF0aCBkPSJNMCwzMyBhNTYsMTUgMCAwIDAgMTEyLDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzI1NjNFQiIgc3Ryb2tlLXdpZHRoPSIyLjUiLz4KICAgIDxwYXRoIGQ9Ik0wLDUzIGE1NiwxNSAwIDAgMCAxMTIsMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjU2M0VCIiBzdHJva2Utd2lkdGg9IjIuNSIvPgogIDwvZz4KICA8dGV4dCB4PSI5ODEiIHk9Ijc2MiIgY2xhc3M9ImNhcCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+cmFjaWsuZGI8L3RleHQ+CiAgPHRleHQgeD0iOTgxIiB5PSI3ODMiIGNsYXNzPSJub3RlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xOC4wMDggaGlkYW5nYW4gwrcgMjU4cmIgYmFyaXMgYmFoYW48L3RleHQ+CgogIDwhLS0gZGF0YWJhc2UgLT4gcmVwb3J0IC0tPgogIDx0ZXh0IHg9Ijc5MCIgeT0iNjU2IiBjbGFzcz0ibGJsIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5OdXRyaXRpb24gJmFtcDs8L3RleHQ+CiAgPHRleHQgeD0iNzkwIiB5PSI2NzkiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNvc3QgRmFjdHM8L3RleHQ+CiAgPGxpbmUgeDE9IjkxOSIgeTE9IjcwMCIgeDI9IjY0MCIgeTI9IjcwMCIgY2xhc3M9ImZsb3ciLz4KCiAgPCEtLSBkYXRhIHNvdXJjZXMgLT4gZGF0YWJhc2UgLS0+CiAgPGxpbmUgeDE9IjExMTIiIHkxPSI3MDAiIHgyPSIxMDQ2IiB5Mj0iNzAwIiBjbGFzcz0iZmxvdyIvPgoKICA8IS0tID09PT09PT09PT09PT09PT09IGRhdGEgc291cmNlcyA9PT09PT09PT09PT09PT09PSAtLT4KICA8cmVjdCB4PSIxMTE4IiB5PSI1NTIiIHdpZHRoPSI0MjAiIGhlaWdodD0iMjU2IiBjbGFzcz0iZ3JwIi8+CgogIDxyZWN0IHg9IjExOTYiIHk9IjU3MCIgd2lkdGg9IjMxNiIgaGVpZ2h0PSI5OCIgY2xhc3M9InN1YiIvPgogIDx0ZXh0IHg9IjEzNTQiIHk9IjU5NCIgY2xhc3M9InQiIGZvbnQtc2l6ZT0iMTUiIGZvbnQtd2VpZ2h0PSJib2xkIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5SZWZlcmVuY2UgU3RhbmRhcmRzPC90ZXh0PgogIDx0ZXh0IHg9IjEyMTQiIHk9IjYxOCIgY2xhc3M9ImJ1bCI+4oCiIEFLRyAyMDE5IChQZXJtZW5rZXMgMjgvMjAxOSk8L3RleHQ+CiAgPHRleHQgeD0iMTIxNCIgeT0iNjM4IiBjbGFzcz0iYnVsIj7igKIgSXNpIFBpcmluZ2t1IChQZXJtZW5rZXMgNDEvMjAxNCk8L3RleHQ+CiAgPHRleHQgeD0iMTIxNCIgeT0iNjU4IiBjbGFzcz0iYnVsIj7igKIgTUJHIFJwMTAuMDAwL3BvcnNpIChCR04pPC90ZXh0PgoKICA8cmVjdCB4PSIxMTMwIiB5PSI2ODQiIHdpZHRoPSIxOTYiIGhlaWdodD0iMTEwIiBjbGFzcz0ic3ViIi8+CiAgPHRleHQgeD0iMTIyOCIgeT0iNzA4IiBjbGFzcz0idCIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNvbXBvc2l0aW9uPC90ZXh0PgogIDx0ZXh0IHg9IjExNDQiIHk9IjczMiIgY2xhc3M9ImJ1bCI+4oCiIFRLUEkgMjAyMDwvdGV4dD4KICA8dGV4dCB4PSIxMTQ0IiB5PSI3NTIiIGNsYXNzPSJidWwiPuKAoiAxLjE0NiBiYWhhbiBwYW5nYW48L3RleHQ+CiAgPHRleHQgeD0iMTE0NCIgeT0iNzcyIiBjbGFzcz0iYnVsIj7igKIgQkREICsgMjIgemF0IGdpemk8L3RleHQ+CgogIDxyZWN0IHg9IjEzMzgiIHk9IjY4NCIgd2lkdGg9IjE4OCIgaGVpZ2h0PSIxMTAiIGNsYXNzPSJzdWIiLz4KICA8dGV4dCB4PSIxNDMyIiB5PSI3MDgiIGNsYXNzPSJ0IiBmb250LXNpemU9IjE1IiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UHJpY2UgRGF0YTwvdGV4dD4KICA8dGV4dCB4PSIxMzUyIiB5PSI3MzIiIGNsYXNzPSJidWwiPuKAoiBCYXBhbmFzIHNuYXBzaG90PC90ZXh0PgogIDx0ZXh0IHg9IjEzNTIiIHk9Ijc1MiIgY2xhc3M9ImJ1bCI+4oCiIEJJIFBJSFBTPC90ZXh0PgogIDx0ZXh0IHg9IjEzNTIiIHk9Ijc3MiIgY2xhc3M9ImJ1bCI+4oCiIEluZGVrcyBrZW1haGFsYW48L3RleHQ+CgogIDx0ZXh0IHg9IjEzMjgiIHk9IjgzOCIgY2xhc3M9ImxibCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Rm9vZCAmYW1wOyBQcmljZSBEYXRhIFNvdXJjZTwvdGV4dD4KCiAgPCEtLSA9PT09PT09PT09PT09PT09PSBmZWVkYmFjayBsb29wcyB0byB0aGUgb3BlcmF0b3IgPT09PT09PT09PT09PT09PT0gLS0+CiAgPCEtLSBtZW51IHBsYW4gLT4gb3BlcmF0b3IgOiBjaG9vc2luZyB0aGUgbWVudSAtLT4KICA8cGF0aCBkPSJNNDAwLDQ1NSBDMzAwLDQzMCAxNzAsNDAwIDExOCwzMjIiIGNsYXNzPSJmbG93Ii8+CiAgPHRleHQgeD0iMzAwIiB5PSIzODEiIGNsYXNzPSJsYmwiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNob29zaW5nIE1lbnU8L3RleHQ+CgogIDwhLS0gcmVwb3J0IC0+IG9wZXJhdG9yIDogYW5zd2VycyAtLT4KICA8cGF0aCBkPSJNNDUyLDcwNiBDMjYwLDc2MCAxMDAsNzAwIDk2LDMzMCIgY2xhc3M9ImZsb3ciLz4KCiAgPCEtLSBvcGVyYXRvciAtPiByZXBvcnQgOiBxdWVzdGlvbnMgLS0+CiAgPHBhdGggZD0iTTcwLDMzNiBDNDAsNjQwIDEyMCw4MDAgNDQwLDc1MiIgY2xhc3M9ImZsb3ciLz4KICA8dGV4dCB4PSIxNzAiIHk9IjU0OCIgY2xhc3M9ImxibCI+QXNraW5nIHdoeSBhIGRpc2ggd2FzPC90ZXh0PgogIDx0ZXh0IHg9IjE3MCIgeT0iNTcxIiBjbGFzcz0ibGJsIj5jaG9zZW4sIGhvdyB0byByYWlzZSBBS0c8L3RleHQ+CiAgPHRleHQgeD0iMTcwIiB5PSI1OTQiIGNsYXNzPSJsYmwiPmFkZXF1YWN5LCB3aGF0IHRvIGJ1eTwvdGV4dD4KPC9zdmc+Cg==" alt="Racik architecture: SPPG operator sends Indonesian text to the RACIK SEA-LION orchestrator, which passes through a candidate filter to the dish corpus built from the regional recipe corpus; the nutrition and cost engine generates a menu plan under CP-SAT; compliance and procurement reports flow back to the operator, with racik.db fed by TKPI composition, reference standards and price data.">
+          </div>
+          <figcaption>
+            The full system. Yellow boxes are process steps, blue icons are stores and
+            models, dashed groups are external data sources. Served live at
+            <code>/architecture.svg</code>; source in <code>docs/architecture.svg</code>.
+          </figcaption>
+        </figure>
+
+        <div class="rule">
+          <div class="k">The grounding rule</div>
+          <p>
+            No gram, rupiah, calorie or adequacy figure is ever produced by the model.
+            Each one is computed by the engine and handed to the model as tool output.
+            An LLM that quietly rounded a protein figure would destroy the single
+            property that makes Racik worth using, so it is never given the chance to
+            compute one.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============ 02 ============ -->
+      <section id="lifecycle">
+        <h2><span class="sec-n">02</span>Request paths</h2>
+        <p>
+          Two entry points reach the same engine. The form path is direct and
+          deterministic; the language path adds SEA-LION in front of it. Neither can
+          produce a number the other could not.
+        </p>
+
+        <h3>Form path — <code>POST /api/plan</code></h3>
+        <pre><code>PlanBody → PlanRequest → MenuOptimizer.solve()
+  ├── _candidates()   pre-filter per slot: exclusions, cost ceiling,
+  │                   component-only slots, dedupe by name, rank, top 220
+  ├── CP-SAT model    tray composition · variety · soft nutrient floors
+  │                   · energy ceiling · fat ≤30% energy · soft budget
+  └── _extract()      → PlanResult(days, relaxations, budget_overrun)
+                      → _serialise() → compliance rows + notes</code></pre>
+
+        <h3>Language path — <code>POST /api/ask</code></h3>
+        <pre><code>question → RacikOrchestrator.ask()
+  ├── client not configured? → rule-based parse_intent() → plan_menu → text
+  └── agent loop (≤6 steps, repeated-call detection)
+        SEA-LION → tool_calls → _invoke() → tool result JSON
+                 ↺ fed back as role:"tool" messages
+        → final prose + ToolInvocation trace + plan payload</code></pre>
+
+        <p>
+          Failure in the language path degrades rather than breaks: a missing API key,
+          a network error, or an HTTP error from SEA-LION all fall back to the
+          rule-based planner, which returns the same numbers from the same tools.
+        </p>
+      </section>
+
+      <!-- ============ 03 ============ -->
+      <section id="pipeline">
+        <h2><span class="sec-n">03</span>Build pipeline</h2>
+        <p>
+          <code>scripts/build_db.py</code> runs this once, in about 30 seconds, and
+          writes <code>data/racik.db</code>. These steps are numbered because they are
+          genuinely ordered — each consumes the previous one's output.
+        </p>
+
+        <div class="pipe">
+          <div class="step"><div class="i">1</div><div>
+            <h4>Parse household measures</h4>
+            <p><code>racik/urt.py</code> — 260,734 ingredient lines to grams by explicit
+            rule. "2 ons ikan" → 200 g, "1 papan tempe" → 200 g, "secukupnya garam" →
+            2 g flagged as unquantified. 99.98% resolved.</p>
+          </div></div>
+          <div class="step"><div class="i">2</div><div>
+            <h4>Match to composition</h4>
+            <p><code>racik/tkpi.py</code> — token-set matching onto TKPI codes via 200+
+            curated aliases, documented proxies, then fuzzy fallback. Never substring:
+            "ayam" is inside "Bayam".</p>
+          </div></div>
+          <div class="step"><div class="i">3</div><div>
+            <h4>Compute nutrition</h4>
+            <p><code>racik/nutrition.py</code> — edible g = gross × BDD/100, then
+            per-100 g composition, then FAO/INFOODS retention factors for the inferred
+            cooking method. Frying oil counted at 10% absorption.</p>
+          </div></div>
+          <div class="step"><div class="i">4</div><div>
+            <h4>Cost on gross weight</h4>
+            <p><code>racik/prices.py</code> — cost is charged on as-purchased weight,
+            not edible weight, through a fallback ladder: TKPI code → ingredient name →
+            food group → table default. The basis used is reported.</p>
+          </div></div>
+          <div class="step"><div class="i">5</div><div>
+            <h4>Classify and scale</h4>
+            <p>Assign the Isi Piringku tray slot from ingredient mass shares, estimate
+            servings from the slot-defining mass against the reference portion, then
+            divide the whole pot by that count.</p>
+          </div></div>
+          <div class="step"><div class="i">6</div><div>
+            <h4>Persist</h4>
+            <p>Write <code>foods</code>, <code>dishes</code> and <code>dish_lines</code>
+            to SQLite with indexes on slot, province, island and main food, plus the
+            22 served components (rice, tubers, fruit, milk) at several portion sizes.</p>
+          </div></div>
+        </div>
+      </section>
+
+      <!-- ============ 04 ============ -->
+      <section id="modules">
+        <h2><span class="sec-n">04</span>Modules</h2>
+        <p>
+          Listed in dependency order — each depends only on those above it. No module
+          imports one below it, so the stack can be read top to bottom.
+        </p>
+
+        <div class="mods">
+          <div class="mod">
+            <div class="path">racik/config.py</div><div class="loc">113 lines</div>
+            <div class="what">Program policy: budget, tray composition, reference portions, paths.</div>
+            <div class="surf">MBGConfig · SLOTS · REFERENCE_PORTION_G · COMPONENT_ONLY_SLOTS · OPTIONAL_SLOTS · MBG</div>
+            <div class="why">Everything here is policy, not physics — editable per SPPG and region, never hard-coded at a call site.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/akg.py</div><div class="loc">148 lines</div>
+            <div class="what">AKG 2019 (Permenkes 28/2019) age bands and per-meal targets.</div>
+            <div class="surf">AgeBand · stage_band() · blended_band() · binding_band() · BINDING_NUTRIENTS · ADVISORY_NUTRIENTS</div>
+            <div class="why">Macros and micros are kept in separate tiers. Micronutrient values disagree across secondary sources, so they are advisory and never constrain a solve unless explicitly enabled.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/i18n.py</div><div class="loc">146 lines</div>
+            <div class="what">Indonesian and English strings for the prose the server writes itself.</div>
+            <div class="surf">LANGS · DEFAULT_LANG · norm_lang() · t() · unit() · STRINGS</div>
+            <div class="why">Most labels already travel bilingually in the API response, so only the methodology notes and fallback answer live here. Adding a language means adding one key block; nothing else in the codebase branches on language.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/urt.py</div><div class="loc">490 lines</div>
+            <div class="what">Ukuran Rumah Tangga → grams. Numbers, units, densities, piece weights.</div>
+            <div class="surf">parse_line() · parse_ingredient_block() · Confidence · MASS_UNITS_G · VOLUME_UNITS_ML · COUNT_UNITS_DEFAULT_G · PIECE_WEIGHTS · CANONICAL_UNIT</div>
+            <div class="why">Rule-based rather than an LLM, so every gram traces to a named rule and re-runs identically. A nutrition engine whose numbers move between runs cannot be audited.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/tkpi.py</div><div class="loc">510 lines</div>
+            <div class="what">TKPI 2020 loader, BDD handling, and recipe-name → food-code resolution.</div>
+            <div class="surf">FoodDB.from_csv() · FoodDB.match() · Food.purchase_grams() · DIRECT_ALIASES · PROXY_ALIASES · DISCARDED_AROMATICS · IDENTITY_MODIFIERS</div>
+            <div class="why">TKPI names are inverted ("Sapi, daging, lemak sedang, segar"), so matching runs on token sets with an identity guard. Aliases were read off the loaded table, never inferred.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/prices.py</div><div class="loc">147 lines</div>
+            <div class="what">Rupiah-per-kilogram lookups with an explicit fallback ladder.</div>
+            <div class="surf">PriceTable.load() · PriceTable.cost_idr() · Price.basis · LivePriceClient.refresh()</div>
+            <div class="why">Bapanas and BI daily endpoints are undocumented and geo-restricted, so a versioned snapshot is the source of truth and live refresh fails closed onto it. Nothing in the planner depends on the network.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/nutrition.py</div><div class="loc">513 lines</div>
+            <div class="what">Recipe → costed, nutrition-bearing dish scaled to one portion.</div>
+            <div class="surf">RecipeEngine.build() · Dish · DishQuality · IngredientLine · build_component_dishes() · RETENTION_FACTORS · OIL_ABSORPTION_RATE</div>
+            <div class="why">Carries the two largest error sources openly: servings are estimated (the corpus states no yield) and retention factors are approximations. Both are exposed through DishQuality.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/store.py</div><div class="loc">200 lines</div>
+            <div class="what">SQLite read layer. Dishes load without lines; lines load on demand.</div>
+            <div class="surf">RacikStore.load_dishes() · dish() · lines() · hydrate() · search_dishes() · provinces() · island_of() · stats()</div>
+            <div class="why">18k dishes carry 258k lines, but a solve only needs lines for the ~25 dishes it selects. Full load is 0.5 s.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/optimizer.py</div><div class="loc">607 lines</div>
+            <div class="what">CP-SAT menu selection under AKG floors, budget and tray rules.</div>
+            <div class="surf">MenuOptimizer.solve() · PlanRequest · PlanResult · DayPlan · Relaxation · dish_key() · W_NUTRIENT_SLACK · W_BUDGET_SLACK</div>
+            <div class="why">Nutrient floors and the budget cap are soft, with penalised slack, so a solve always returns a menu plus a list of what it had to relax. "Infeasible" helps no cook.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/procurement.py</div><div class="loc">77 lines</div>
+            <div class="what">Menu → aggregated shopping list scaled to headcount.</div>
+            <div class="surf">aggregate() · totals() · ProcurementLine.gross_kg</div>
+            <div class="why">Aggregates on TKPI code, not recipe wording, so "bawang merah", "bamer" and "5 siung bawang merah" become one purchase-order line.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/sealion.py</div><div class="loc">224 lines</div>
+            <div class="what">SEA-LION client: auth, throttling, retries, tool-call parsing.</div>
+            <div class="surf">SeaLionClient.chat() · configured · describe() · ChatResult · ToolCall · ORCHESTRATOR_MODEL · SeaLionNotConfigured</div>
+            <div class="why">Built on urllib, so the orchestrator adds no dependency. Self-throttles to the documented 10 req/min and backs off on 429.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/bedrock.py</div><div class="loc">269 lines</div>
+            <div class="what">SEA-LION on Amazon Bedrock via Custom Model Import, plus provider selection.</div>
+            <div class="surf">BedrockSeaLionClient.chat() · verify_deployment() · make_client() · SUPPORTED_REGIONS</div>
+            <div class="why">Tool calling is not guaranteed for imported models, so the client ships a preflight that probes chat and tools separately rather than letting a demo discover it live.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/translate.py</div><div class="loc">268 lines</div>
+            <div class="what">Indonesian dish names glossed to English by SEA-LION, batched and cached.</div>
+            <div class="surf">DishTranslator.translate() · Gloss · rule_gloss() · BATCH_SIZE</div>
+            <div class="why">The gloss is carried beside the name, never instead of it — the kitchen cooks the Indonesian dish. Every result reports whether it came from the model or the offline glosser, because a wrong gloss attributed to a model is worse than no gloss.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/orchestrator.py</div><div class="loc">765 lines</div>
+            <div class="what">Tool definitions, the bounded agent loop, and the rule-based fallback.</div>
+            <div class="surf">RacikOrchestrator.ask() · TOOL_SCHEMAS · ToolInvocation · OrchestratorResult · parse_intent() · MAX_STEPS · MAX_REPEATED_CALLS</div>
+            <div class="why">The loop is bounded in code, not in the prompt. A stop condition that lives only in a prompt is one that eventually does not stop.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/report.py</div><div class="loc">328 lines</div>
+            <div class="what">The printable compliance and procurement document.</div>
+            <div class="surf">build_report() · plan_notes() · STRINGS</div>
+            <div class="why">Everything else is a screen; this is the deliverable. It marks advisory nutrients in every table and gives relaxations their own section, because a compliance document that hides a relaxed floor is worse than no document.</div>
+          </div>
+          <div class="mod">
+            <div class="path">racik/api.py</div><div class="loc">377 lines</div>
+            <div class="what">FastAPI surface, response serialisation, static UI host.</div>
+            <div class="surf">/api/meta · /api/plan · /api/dish/{id} · /api/procurement · /api/ask · /api/orchestrator · /api/health · /architecture.svg</div>
+            <div class="why">Serialisation splits verified from advisory nutrients and always attaches methodology notes, so a caller cannot render the numbers without their caveats.</div>
+          </div>
+          <div class="mod">
+            <div class="path">ui/index.html</div><div class="loc">1,046 lines</div>
+            <div class="what">Single-file planner interface, Indonesian and English. No build step.</div>
+            <div class="surf">setup form · day tabs · tray cards · dish modal with gram provenance · compliance bars · procurement table + CSV · Ask Racik panel · ID/EN toggle</div>
+            <div class="why">Shows the relaxation table and the INFO badge on advisory nutrients, so the interface cannot present a relaxed plan as fully compliant.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 05 ============ -->
+      <section id="data">
+        <h2><span class="sec-n">05</span>Data model</h2>
+        <p>
+          One SQLite file, 66 MB, rebuilt from source by <code>scripts/build_db.py</code>.
+          It is a derived artefact — never edited by hand, safe to delete and regenerate.
+        </p>
+
+        <div class="tw">
+          <table>
+            <thead><tr><th>Table</th><th class="num">Rows</th><th class="num">Cols</th><th>Holds</th></tr></thead>
+            <tbody>
+              <tr><td class="k">foods</td><td class="num">1,149</td><td class="num">25</td>
+                  <td>TKPI 2020 per 100 g edible, plus BDD, an imputation flag, and 3 synthetic entries (salt, water, bouillon)</td></tr>
+              <tr><td class="k">dishes</td><td class="num">18,008</td><td class="num">38</td>
+                  <td>One costed dish per portion: slot, servings, cost, 17 nutrients, quality metrics, region, main ingredient, searchable ingredient index</td></tr>
+              <tr><td class="k">dish_lines</td><td class="num">257,887</td><td class="num">16</td>
+                  <td>Every ingredient line with gross/edible grams, cost, TKPI code, match method, and the URT rule that produced the gram figure</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Indexes: <code>idx_dishes_slot</code>, <code>idx_dishes_province</code>,
+          <code>idx_dishes_island</code>, <code>idx_dishes_mainfood</code>,
+          <code>idx_lines_dish</code>.
+        </p>
+
+        <h3>Dish distribution</h3>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Tray slot</th><th class="num">Dishes</th><th class="num">Mean quality</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td class="k">hewani</td><td class="num">13,525</td><td class="num">0.894</td><td>Recipe corpus</td></tr>
+              <tr><td class="k">nabati</td><td class="num">3,051</td><td class="num">0.910</td><td>Recipe corpus</td></tr>
+              <tr><td class="k">sayur</td><td class="num">826</td><td class="num">0.809</td><td>Recipe corpus</td></tr>
+              <tr><td class="k">staple</td><td class="num">429</td><td class="num">0.836</td><td>Served components only</td></tr>
+              <tr><td class="k">buah</td><td class="num">177</td><td class="num">0.819</td><td>Served components only</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec">
+          <b>Why staple and buah are component-only.</b> Rice is cooked plain and fruit is
+          cut — an SPPG cooks three items a day, not five. Restricting these slots also
+          removes a misclassification class: a battered tempe dish is mostly wheat flour
+          by mass and would otherwise present itself as a credible "staple".
+        </div>
+      </section>
+
+      <!-- ============ 06 ============ -->
+      <section id="api">
+        <h2><span class="sec-n">06</span>HTTP API</h2>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Route</th><th>Method</th><th>Returns</th></tr></thead>
+            <tbody>
+              <tr><td class="k">/api/meta</td><td><span class="tag get">GET</span></td>
+                  <td>Stages with AKG targets, provinces, tray slots, nutrient registry, budget config, corpus stats</td></tr>
+              <tr><td class="k">/api/plan</td><td><span class="tag post">POST</span></td>
+                  <td>Solved menu: days, per-slot dishes, compliance rows, relaxations, methodology notes</td></tr>
+              <tr><td class="k">/api/dish/{id}</td><td><span class="tag get">GET</span></td>
+                  <td>Per-portion nutrition, cost, and every ingredient with its TKPI code and gram provenance</td></tr>
+              <tr><td class="k">/api/procurement</td><td><span class="tag post">POST</span></td>
+                  <td>Shopping list aggregated by TKPI code, scaled to headcount, in gross kg and rupiah</td></tr>
+              <tr><td class="k">/api/ask</td><td><span class="tag post">POST</span></td>
+                  <td>Natural-language answer, the tool trace behind it, and the computed plan</td></tr>
+              <tr><td class="k">/api/orchestrator</td><td><span class="tag get">GET</span></td>
+                  <td>Which model is driving, whether it is reachable, available tools, step cap</td></tr>
+              <tr><td class="k">/api/health</td><td><span class="tag get">GET</span></td><td>Liveness plus dish count</td></tr>
+              <tr><td class="k">/architecture.svg</td><td><span class="tag get">GET</span></td><td>The system diagram, single-sourced from docs/</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          FastAPI also serves <code>/docs</code> (Swagger) and <code>/openapi.json</code>.
+          The UI is mounted at <code>/ui</code> with <code>/</code> serving the planner.
+        </p>
+      </section>
+
+      <!-- ============ 07 ============ -->
+      <section id="orchestrator">
+        <h2><span class="sec-n">07</span>Orchestrator</h2>
+        <p>
+          <a href="https://sea-lion.ai/">SEA-LION v4.5</a> (AI Singapore, May 2026) is the
+          language layer. It was chosen for two documented properties: it is trained on
+          Southeast Asian languages, so operators write ordinary Indonesian, and it is
+          tuned for precise function-calling and agentic tool-use.
+        </p>
+
+        <div class="tw">
+          <table>
+            <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>Endpoint</td><td class="k">https://api.sea-lion.ai/v1</td></tr>
+              <tr><td>Model</td><td class="k">aisingapore/Qwen-SEA-LION-v4.5-27B-IT</td></tr>
+              <tr><td>Protocol</td><td>OpenAI-compatible chat completions with tools</td></tr>
+              <tr><td>Auth</td><td>Bearer token from <code>SEALION_API_KEY</code></td></tr>
+              <tr><td>Rate limit</td><td>10 req/min documented — client self-throttles, backs off on 429</td></tr>
+              <tr><td>Temperature</td><td>0 — parameter extraction must be reproducible</td></tr>
+              <tr><td>Self-hosting</td><td>Point <code>base_url</code> at any OpenAI-compatible server (e.g. <code>Gemma-SEA-LION-v4.5-E2B-IT</code>)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Tools</h3>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Tool</th><th>Returns</th></tr></thead>
+            <tbody>
+              <tr><td class="k">plan_menu</td><td>Optimised menu, per-day cost and adequacy, relaxed floors</td></tr>
+              <tr><td class="k">budget_sensitivity</td><td>Adequacy and realised cost across several ingredient budgets</td></tr>
+              <tr><td class="k">search_dishes</td><td>Candidates by slot, province, cost ceiling, protein floor</td></tr>
+              <tr><td class="k">get_dish</td><td>Per-portion nutrition, cost, ingredients with gram provenance</td></tr>
+              <tr><td class="k">procurement_list</td><td>Aggregated shopping list scaled to headcount</td></tr>
+              <tr><td class="k">nutrition_reference</td><td>AKG per-meal targets, split into enforced and informational</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Loop safety</h3>
+        <ul class="tight">
+          <li><b>Hard step cap</b> — <code>MAX_STEPS = 6</code>, enforced by the loop, not requested in the prompt.</li>
+          <li><b>Repeated-call detection</b> — an identical call signature more than <code>MAX_REPEATED_CALLS = 2</code> times is short-circuited with an instruction to use the result already held.</li>
+          <li><b>Total trace</b> — unknown tools, bad arguments and blocked repeats all land in the trace. Two bugs were caught here in testing: both were error paths that returned early and skipped the trace, which would have hidden exactly the events worth seeing.</li>
+          <li><b>Graceful degradation</b> — no key, or any <code>SeaLionError</code>, routes to <code>parse_intent()</code> driving the same tools.</li>
+        </ul>
+      </section>
+
+      
+      <!-- ============ 07b ============ -->
+      <section id="rubric">
+        <h2><span class="sec-n">7b</span>Candidate rubric</h2>
+        <p class="lede">
+          "Why was this dish never considered?" is the question an SPPG
+          nutritionist actually asks, so the pre-filter states its rules rather
+          than burying them in a loop. <code>POST /api/candidates</code> returns
+          the gates, the weights, and how many dishes each gate removed.
+        </p>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Gate</th><th>Rule</th></tr></thead>
+            <tbody>
+              <tr><td class="k">G1 slot</td><td>must fill the tray slot being filled</td></tr>
+              <tr><td class="k">G2 source</td><td><code>staple</code> and <code>buah</code> accept served components only</td></tr>
+              <tr><td class="k">G3 exclusions</td><td>term matched against dish name <em>and</em> full ingredient index</td></tr>
+              <tr><td class="k">G4 dish id</td><td>explicit operator veto</td></tr>
+              <tr><td class="k">G5 cost ceiling</td><td>cost per portion &le; 85% of the ingredient budget</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <pre><code>value      = min(protein/target, 1.5) + min(energy/target, 1.5)
+efficiency = value / (cost/budget + 0.15)
+score      = efficiency + 3.0 x regional_fit + 2.0 x data_quality</code></pre>
+        <div class="spec">
+          <b>What the funnel exposes.</b> For SD in Central Java the cost ceiling
+          alone removes <b>9,084 of 13,525</b> animal-protein dishes — two thirds
+          of the corpus priced out before the solver runs. That is the budget
+          story, measured rather than asserted.
+        </div>
+      </section>
+
+      <!-- ============ 07c ============ -->
+      <section id="deliverable">
+        <h2><span class="sec-n">7c</span>The report, and translation</h2>
+        <p>
+          <code>POST /api/report</code> is the deliverable: one printable page
+          carrying the menu, per-day AKG compliance, every relaxed floor, the
+          aggregated shopping list in gross kilograms, methodology caveats and
+          signature blocks. Self-contained HTML with print styles, bilingual,
+          with advisory micronutrients tagged <code>INFO</code> in every table.
+        </p>
+        <p>
+          <code>POST /api/translate</code> glosses dish names with SEA-LION,
+          batched 40 at a time against the 10 req/min limit and cached. The
+          gloss sits beside the Indonesian name, never replaces it, and reports
+          whether it came from the model or the offline glosser.
+        </p>
+      </section>
+
+      <!-- ============ 08 ============ -->
+      <section id="constants">
+        <h2><span class="sec-n">08</span>Policy constants</h2>
+        <p>
+          These encode programme policy and regulation rather than physics. They are the
+          first things to change when the programme changes, and each is traceable to a
+          document.
+        </p>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Constant</th><th class="num">Value</th><th>Basis</th></tr></thead>
+            <tbody>
+              <tr><td class="k">budget_per_portion_idr</td><td class="num">10,000</td><td>Standing national figure 2025–26, cut from Rp15,000 in Nov 2024</td></tr>
+              <tr><td class="k">ingredient_budget_share</td><td class="num">0.70</td><td>BGN per-SPPG 70/20/10 split → ~Rp7,000 for raw ingredients</td></tr>
+              <tr><td class="k">akg_fraction</td><td class="num">1/3</td><td>One MBG meal ≈ one third of daily AKG (BGN)</td></tr>
+              <tr><td class="k">fat_energy_ceiling</td><td class="num">0.30</td><td>Standard Indonesian dietary guidance</td></tr>
+              <tr><td class="k">REFERENCE_PORTION_G</td><td class="num">150 / 75 / 60 / 100 / 100</td><td>Isi Piringku reference portions: staple, hewani, nabati, sayur, buah</td></tr>
+              <tr><td class="k">OIL_ABSORPTION_RATE</td><td class="num">0.10</td><td>Deep-fried food absorbs ~8–12% of its weight in oil (Bognár)</td></tr>
+              <tr><td class="k">1 ons</td><td class="num">100 g</td><td>Indonesian culinary usage — a hectogram, not the 28 g English ounce</td></tr>
+              <tr><td class="k">nasi conversion factor</td><td class="num">0.40</td><td>Kemenkes matang→mentah: 150 g cooked rice = 60 g raw beras</td></tr>
+              <tr><td class="k">W_NUTRIENT_SLACK / W_BUDGET_SLACK</td><td class="num">400 / 900</td><td>Overspending is penalised above missing a floor; both above rupiah</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 09 ============ -->
+      <section id="results">
+        <h2><span class="sec-n">09</span>Measured results</h2>
+
+        <h3>Extraction and matching</h3>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Gram provenance</th><th class="num">Lines</th><th>Ingredient resolution</th><th class="num">Lines</th></tr></thead>
+            <tbody>
+              <tr><td>Piece weight, ingredient known</td><td class="num">110,309</td><td>Curated alias</td><td class="num">201,861</td></tr>
+              <tr><td>Volume × density</td><td class="num">55,255</td><td>Documented proxy</td><td class="num">4,583</td></tr>
+              <tr><td>Nominal ("secukupnya")</td><td class="num">47,472</td><td>Fuzzy token-set</td><td class="num">3,026</td></tr>
+              <tr><td>Piece weight, category fallback</td><td class="num">25,646</td><td>Aromatics + unmatched</td><td class="num">48,417</td></tr>
+              <tr><td>Explicit mass unit</td><td class="num">19,156</td><td></td><td class="num"></td></tr>
+              <tr><td><span class="bad">Unresolved</span></td><td class="num">49</td><td></td><td class="num"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Of the unmatched share, roughly 13 percentage points are aromatics that are
+          lifted out before serving — bay leaf, lemongrass, galangal. They are costed
+          and appear on the procurement list, but contribute no nutrition, which is
+          correct rather than a gap.
+        </p>
+
+        <h3>The finding that matters</h3>
+        <p>Five-day menus for Central Java, by age band and ingredient budget:</p>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Stage</th><th class="num">Budget</th><th class="num">Mean energy</th><th class="num">Target</th><th class="num">Adequacy</th><th class="num">Actual cost</th></tr></thead>
+            <tbody>
+              <tr><td>SD (7–12)</td><td class="num">Rp7,000</td><td class="num">552</td><td class="num">617</td><td class="num bad">0.87</td><td class="num">Rp6,970</td></tr>
+              <tr><td>SD (7–12)</td><td class="num">Rp10,000</td><td class="num">691</td><td class="num">617</td><td class="num ok">1.00</td><td class="num">Rp7,724</td></tr>
+              <tr><td>SMP (13–15)</td><td class="num">Rp7,000</td><td class="num">558</td><td class="num">742</td><td class="num bad">0.80</td><td class="num">Rp6,990</td></tr>
+              <tr><td>SMP (13–15)</td><td class="num">Rp10,000</td><td class="num">833</td><td class="num">742</td><td class="num ok">1.00</td><td class="num">Rp8,559</td></tr>
+              <tr><td>SMA (16–18)</td><td class="num">Rp7,000</td><td class="num">555</td><td class="num">792</td><td class="num bad">0.78</td><td class="num">Rp6,981</td></tr>
+              <tr><td>SMA (16–18)</td><td class="num">Rp10,000</td><td class="num">857</td><td class="num">792</td><td class="num ok">1.00</td><td class="num">Rp8,617</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="spec">
+          At the Rp7,000 ingredient sub-budget, <b>no combination in an 18,000-dish corpus
+          meets one third of AKG for school-age children.</b> The budget binds and adequacy
+          tops out between 0.78 and 0.87. Full compliance appears between roughly Rp7,700
+          and Rp8,600 of ingredient spend. Racik reports this as a named, quantified
+          relaxation rather than silently serving a short tray.
+        </div>
+      </section>
+
+      <!-- ============ 10 ============ -->
+      <section id="tests">
+        <h2><span class="sec-n">10</span>Test suite</h2>
+        <p>
+          <code>python -m pytest tests -q</code> — 137 tests, about 90 seconds. No network
+          and no API key required.
+        </p>
+        <h3>Engine — <code>tests/test_racik.py</code> (48)</h3>
+        <ul class="tight">
+          <li>Number and unit parsing: fractions, mixed numbers, ranges, vulgar glyphs, malformed input that must degrade rather than crash a 260k-line build.</li>
+          <li>The <code>ons = 100 g</code> convention and spoon anchors (1 sdm = 10 ml, 1 sdt = ⅓ sdm).</li>
+          <li>The ayam/bayam substring trap, inverted TKPI names, identity-modifier guards, and an integrity check that every alias code exists.</li>
+          <li>BDD purchase weights, vitamin A as retinol equivalents, price fallback basis reporting.</li>
+          <li>Frying-oil absorption, including the boundary where the cap begins to bite.</li>
+          <li>Soft-floor behaviour under a deliberately impossible budget: a menu must still come back, with the shortfall named.</li>
+        </ul>
+        <h3>Orchestration — <code>tests/test_orchestrator.py</code> (28)</h3>
+        <ul class="tight">
+          <li>The agent loop is driven by a scripted stand-in for SEA-LION, so no key or network is needed.</li>
+          <li>Tool results are fed back to the model; the step cap holds against a model that only ever calls tools; repeated calls are short-circuited.</li>
+          <li>Unknown tools and bad arguments are reported in the trace, never raised.</li>
+          <li>Intent parsing, including that unreadable input yields defaults rather than a guess.</li>
+          <li>Fallback still returns real numbers, and exclusions actually reach the planner.</li>
+        </ul>
+      </section>
+
+      <!-- ============ 11 ============ -->
+      <section id="limits">
+        <h2><span class="sec-n">11</span>Known limits</h2>
+        <p>Read this section before quoting any number from Racik externally.</p>
+        <ul class="tight">
+          <li><b>Micronutrients are not enforced.</b> Secondary sources disagree on AKG 2019 iron and zinc — boys 10–12 are reported as both 8 and 13 mg. Ca, Fe, Zn, vitamin A and vitamin C are computed and displayed, marked <code>INFO</code>, and excluded from constraints until transcribed from the Permenkes 28/2019 original. <em>This is the single highest-value open task.</em></li>
+          <li><b>Servings are estimated.</b> The corpus states no yield, so servings come from slot-defining ingredient mass against the reference portion. This is the largest source of per-portion error.</li>
+          <li><b>Retention factors are approximations</b>, applied at category level by inferred cooking method — FAO/INFOODS says as much of its own tables.</li>
+          <li><b>Prices are a dated snapshot.</b> The daily Bapanas and BI endpoints are undocumented and geo-restricted; live refresh is best-effort and falls back.</li>
+          <li><b>The corpus is home cooking</b>, so quantities and costs skew household rather than wholesale SPPG procurement.</li>
+          <li><b>Region assignment is inherited</b> from the source workbook's keyword classifier (11,715 high / 6,418 medium confidence).</li>
+          <li><b>The live SEA-LION path is unverified against the real API.</b> Transport, auth, throttling and tool-call parsing follow the documented contract and the loop is fully tested against a stand-in, but no call has been made with a real key. Set <code>SEALION_API_KEY</code> and check <code>/api/orchestrator</code> reports <code>mode: sealion</code>.</li>
+        </ul>
+      </section>
+
+
+      <!-- ============ 12 ============ -->
+      <section id="bilingual">
+        <h2><span class="sec-n">12</span>Bilingual builds</h2>
+        <p class="lede">
+          Racik ships in Indonesian and English from <strong>one codebase</strong>.
+          Two hand-maintained forks would drift within a week, so the two release
+          builds differ only in which language they <em>default</em> to.
+        </p>
+        <p>
+          Both archives carry the complete ID/EN catalogue and the in-app toggle,
+          so either build can run in either language. Dish names are never
+          translated — "Tempe Mendoan" is the name of the food, not a label.
+        </p>
+
+        <h3>Where language lives</h3>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Layer</th><th>Mechanism</th></tr></thead>
+            <tbody>
+              <tr><td class="k">racik/i18n.py</td>
+                  <td>Prose the server writes itself: methodology notes, the rule-based fallback answer, and the one unit that differs (<code>kkal</code> / <code>kcal</code>)</td></tr>
+              <tr><td class="k">API responses</td>
+                  <td>Labels already travel bilingually — every compliance row and relaxation carries <code>label_id</code> and <code>label_en</code>, so the client picks</td></tr>
+              <tr><td class="k">ui/index.html</td>
+                  <td>A <code>STRINGS</code> catalogue with <code>t()</code>, <code>data-i18n</code> attributes, locale-aware number formatting, and a toggle persisted to <code>localStorage</code></td></tr>
+              <tr><td class="k">Orchestrator</td>
+                  <td>A language directive appended to the system prompt, so the interface language wins when the question itself is ambiguous</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Producing the archives</h3>
+        <pre><code>python scripts/package.py     # -> dist/racik-id.zip, dist/racik-en.zip</code></pre>
+        <p>
+          The script rewrites exactly two marked lines per build —
+          <code>DEFAULT_LANG</code> in <code>ui/index.html</code> and in
+          <code>racik/i18n.py</code> — swaps in the matching README, and refuses
+          to write an archive that fails its structural checks. Everything else
+          is byte-identical between the two.
+        </p>
+        <div class="spec">
+          <b>racik.db is deliberately excluded.</b> It is a 66 MB derived artefact
+          that <code>scripts/build_db.py</code> regenerates in ~30 seconds from
+          the raw sources that <em>are</em> included. Shipping it would quadruple
+          the archive for something the recipient can rebuild — and a stale copy
+          is worse than none. Each archive is 6.5 MB, 29 files.
+        </div>
+
+        <h3>Guarded by tests</h3>
+        <ul class="tight">
+          <li>Both catalogues must hold identical key sets, non-empty values, and matching <code>{placeholders}</code>.</li>
+          <li>No key may be identical across languages — that catches a block copy-pasted and never translated.</li>
+          <li>Every <code>t("…")</code> call and <code>data-i18n</code> attribute in the UI must resolve to a defined key, and the runtime-composed families (<code>slot.*</code>, <code>n.*</code>) must be complete.</li>
+          <li>The <code>DEFAULT_LANG</code> build marker must be present and well-formed, or packaging fails loudly.</li>
+        </ul>
+        <p>
+          Both archives were verified by extracting them to a clean directory,
+          building the database from the packaged raw sources, and running the
+          full suite: <span class="ok">102 passed</span> in each. That run caught
+          a real defect — a test asserting on Indonesian output that failed in
+          the English build.
+        </p>
+      </section>
+
+      <!-- ============ 13 ============ -->
+      <section id="runbook">
+        <h2><span class="sec-n">13</span>Runbook</h2>
+        <pre><code>pip install -r requirements.txt
+python scripts/build_db.py                   # ~30 s → data/racik.db (66 MB)
+export SEALION_API_KEY=...                   # optional; enables the orchestrator
+python -m uvicorn racik.api:app --port 8000  # http://127.0.0.1:8000
+python -m pytest tests -q                    # 102 tests
+python scripts/package.py                    # dist/racik-id.zip + racik-en.zip</code></pre>
+
+        <p>
+          Dependencies: <code>ortools</code>, <code>fastapi</code>, <code>uvicorn</code>,
+          <code>rapidfuzz</code>, <code>pandas</code>, <code>openpyxl</code>,
+          <code>pytest</code>. The SEA-LION client is stdlib only.
+        </p>
+
+        <h3>Where to make common changes</h3>
+        <div class="tw">
+          <table>
+            <thead><tr><th>To change…</th><th>Edit</th><th>Then</th></tr></thead>
+            <tbody>
+              <tr><td>Budget, tray composition, portions</td><td class="k">racik/config.py</td><td>Nothing — read at solve time</td></tr>
+              <tr><td>Ingredient prices</td><td class="k">data/prices_id.json</td><td>Rebuild the DB</td></tr>
+              <tr><td>Add an ingredient alias or proxy</td><td class="k">racik/tkpi.py</td><td>Rebuild; the alias-integrity test guards the code</td></tr>
+              <tr><td>A unit or piece weight</td><td class="k">racik/urt.py</td><td>Rebuild; add a parser test</td></tr>
+              <tr><td>Solver behaviour or weights</td><td class="k">racik/optimizer.py</td><td>Nothing — no rebuild needed</td></tr>
+              <tr><td>Add an orchestrator tool</td><td class="k">racik/orchestrator.py</td><td>Add to <code>TOOL_SCHEMAS</code> and <code>self.tools</code>; a test asserts they match</td></tr>
+              <tr><td>Enable micronutrient constraints</td><td class="k">racik/akg.py</td><td>Verify against the Permenkes PDF first</td></tr>
+              <tr><td>Interface wording, either language</td><td class="k">ui/index.html</td><td>Add to both blocks; a test enforces parity</td></tr>
+              <tr><td>Server prose or a new language</td><td class="k">racik/i18n.py</td><td>Add one key block; nothing else branches on language</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="warn">
+          <strong>Rebuild after any change to</strong> <code>urt.py</code>,
+          <code>tkpi.py</code>, <code>nutrition.py</code> or <code>prices_id.json</code> —
+          these feed <code>racik.db</code>, and a stale database will silently serve the
+          old numbers. Changes to <code>optimizer.py</code>, <code>api.py</code> and
+          <code>orchestrator.py</code> take effect on restart.
+        </div>
+      </section>
+
+      <p class="foot">
+        Sources: AKG 2019 (Permenkes 28/2019) · TKPI 2020 (Kemenkes) · Isi Piringku
+        (Permenkes 41/2014) · Kemenkes <em>Pedoman Konversi Berat Matang-Mentah, BDD</em>
+        (2014) · FAO/INFOODS retention and yield guidance · BGN per-portion budget
+        statements 2024–2026 · Bapanas Panel Harga / BI PIHPS · SEA-LION v4.5
+        (AI Singapore). Figures in this document were read from the running system, not
+        from memory.
+      </p>
+
+    </main>
+  </div>
+</div>

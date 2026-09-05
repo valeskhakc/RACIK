@@ -1,0 +1,18 @@
+racik/.venv
+racik/data/racik.db
+racik/data/racik_state.db
+# 47MB WFP price survey — only needed locally to (re-)run scripts/build_prices.py;
+# its output (data/prices_id.json) is what the running app actually reads.
+racik/data/wfp_food_prices_idn.csv
+.env
+racik/.env
+racik/dist
+racik/.claude
+.claude
+.git
+.gitignore
+**/__pycache__
+**/*.pyc
+racik/tests
+node_modules
+*.zip

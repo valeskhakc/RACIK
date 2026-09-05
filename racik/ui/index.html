@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Racik — Perencana Menu MBG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F3E8; --paper-dim:#EFE9D8; --ink:#1F2B22; --ink-soft:#4A5A4C;
+    --leaf:#3F6B4F; --leaf-dark:#2C4C38; --gold:#E8A33D; --gold-soft:#F3D9A8;
+    --chili:#C0392B; --chili-soft:#F6DCD8; --card:#FFFFFF; --line:#DCD4BC;
+    --ok:#3F6B4F; --warn:#B9761E;
+    --radius:14px;
+    --shadow:0 2px 0 rgba(31,43,34,.06), 0 12px 24px -16px rgba(31,43,34,.25);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.01em;margin:0}
+  .mono,.num{font-family:'JetBrains Mono',ui-monospace,monospace}
+  button{font-family:inherit}
+  a{color:var(--leaf)}
+  :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:18px 24px;max-width:1240px;margin:0 auto;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand-mark{width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(155deg,var(--leaf),var(--leaf-dark));display:grid;place-items:center;
+    color:var(--gold-soft);font-family:'Fraunces',serif;font-weight:700;font-size:18px;
+    box-shadow:inset 0 -3px 0 rgba(0,0,0,.15)}
+  .brand-name{font-family:'Fraunces',serif;font-weight:700;font-size:22px}
+  .brand-sub{font-size:12.5px;color:var(--ink-soft)}
+  .badge{font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:100px;
+    background:var(--paper-dim);color:var(--ink-soft);border:1px solid var(--line)}
+
+  .app{max-width:1240px;margin:0 auto;padding:0 24px 90px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow)}
+  .pad{padding:20px}
+
+  /* ---------- setup ---------- */
+  .setup{display:grid;grid-template-columns:1.35fr .9fr;gap:20px;align-items:start}
+  @media (max-width:900px){.setup{grid-template-columns:1fr}}
+  .hero h1{font-size:clamp(30px,4.4vw,44px);line-height:1.06;margin-bottom:10px}
+  .hero h1 em{font-style:normal;color:var(--leaf)}
+  .hero p{color:var(--ink-soft);font-size:15px;line-height:1.6;margin:0 0 20px;max-width:56ch}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:560px){.grid2{grid-template-columns:1fr}}
+  label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);
+    margin-bottom:6px;letter-spacing:.01em}
+  input,select{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;
+    background:var(--card);font-family:inherit;font-size:14.5px;color:var(--ink)}
+  input:focus,select:focus{border-color:var(--leaf)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+  .chip{font-size:12.5px;padding:6px 12px;border-radius:100px;border:1.5px solid var(--line);
+    background:var(--card);cursor:pointer;color:var(--ink-soft)}
+  .chip[aria-pressed="true"]{background:var(--leaf);border-color:var(--leaf);color:#fff;font-weight:600}
+  .btn{border:none;border-radius:11px;padding:13px 22px;font-weight:700;font-size:15px;cursor:pointer;
+    background:var(--leaf);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.14)}
+  .btn:hover{background:var(--leaf-dark)}
+  .btn[disabled]{opacity:.55;cursor:progress}
+  .btn.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line);box-shadow:none;
+    padding:9px 15px;font-size:13.5px;font-weight:600}
+  .btn.ghost:hover{background:var(--paper-dim)}
+  .hint{font-size:12px;color:var(--ink-soft);margin-top:7px;line-height:1.5}
+
+  /* ---------- summary ---------- */
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .metric{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .metric .k{font-size:11.5px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;
+    letter-spacing:.05em}
+  .metric .v{font-family:'JetBrains Mono',monospace;font-size:23px;font-weight:700;margin-top:5px}
+  .metric .s{font-size:12px;color:var(--ink-soft);margin-top:2px}
+  .bar{height:8px;border-radius:100px;background:var(--paper-dim);overflow:hidden;margin-top:9px}
+  .bar > i{display:block;height:100%;background:var(--leaf);border-radius:100px}
+  .bar.over > i{background:var(--chili)}
+
+  /* ---------- week ---------- */
+  .tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px}
+  .tab{flex-shrink:0;border:1.5px solid var(--line);background:var(--card);border-radius:11px;
+    padding:9px 15px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--ink-soft);
+    display:flex;align-items:center;gap:9px}
+  .tab[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+  .tab .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+  .tab .dot.warn{background:var(--gold)}
+  .tab .dot.bad{background:var(--chili)}
+
+  .tray{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px}
+  .slot{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px;
+    display:flex;flex-direction:column;gap:9px;cursor:pointer;text-align:left;font-family:inherit}
+  .slot:hover{border-color:var(--leaf)}
+  .slot .cat{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--leaf);display:flex;align-items:center;gap:6px}
+  .slot h4{font-size:15.5px;line-height:1.28}
+  .slot .meta{font-size:12px;color:var(--ink-soft);display:flex;justify-content:space-between;gap:8px;
+    margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)}
+  .qbadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px;letter-spacing:.04em}
+  .qbadge.high{background:#E4EFE7;color:var(--leaf-dark)}
+  .qbadge.medium{background:var(--gold-soft);color:#7A5510}
+  .qbadge.low{background:var(--chili-soft);color:#8A2317}
+
+  /* ---------- tables ---------- */
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--ink-soft);padding:9px 10px;border-bottom:1.5px solid var(--line)}
+  td{padding:9px 10px;border-bottom:1px solid var(--paper-dim);vertical-align:top}
+  td.num,th.num{text-align:right;font-family:'JetBrains Mono',monospace}
+  .scroll{overflow-x:auto}
+  tr.dim td{color:var(--ink-soft)}
+
+  .nut{display:grid;grid-template-columns:118px 1fr 108px;gap:11px;align-items:center;
+    padding:7px 0;border-bottom:1px solid var(--paper-dim);font-size:13px}
+  .nut .lbl{display:flex;align-items:center;gap:6px}
+  .nut .track{height:9px;background:var(--paper-dim);border-radius:100px;overflow:hidden}
+  .nut .track > i{display:block;height:100%;background:var(--leaf)}
+  .nut .track > i.short{background:var(--gold)}
+  .nut .track > i.bad{background:var(--chili)}
+  .nut .val{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px}
+  .advisory{font-size:9.5px;font-weight:700;color:var(--warn);border:1px solid var(--gold-soft);
+    background:#FFF8EA;padding:1px 5px;border-radius:5px;letter-spacing:.03em}
+
+  .notice{background:#FFF8EA;border:1px solid var(--gold-soft);border-radius:11px;padding:13px 15px;
+    font-size:13px;line-height:1.6;color:#6B4E14}
+  .notice ul{margin:8px 0 0;padding-left:19px}
+  .notice li{margin-bottom:6px}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+    margin:30px 0 13px;flex-wrap:wrap}
+  .section-head h2{font-size:21px}
+  .section-head p{margin:3px 0 0;font-size:13px;color:var(--ink-soft)}
+
+  dialog{border:none;border-radius:16px;padding:0;max-width:720px;width:calc(100% - 32px);
+    box-shadow:0 30px 70px -20px rgba(31,43,34,.5);background:var(--card);color:var(--ink)}
+  dialog::backdrop{background:rgba(31,43,34,.45)}
+  .dlg-head{padding:20px 22px 14px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+  .dlg-body{padding:18px 22px 24px;max-height:66vh;overflow-y:auto}
+  .x{border:none;background:var(--paper-dim);width:32px;height:32px;border-radius:9px;cursor:pointer;
+    font-size:17px;line-height:1;color:var(--ink-soft);flex-shrink:0}
+  .steps{padding-left:19px;margin:8px 0 0;font-size:13.5px;line-height:1.65;color:var(--ink-soft)}
+  .steps li{margin-bottom:5px}
+
+  .empty{text-align:center;padding:44px 20px;color:var(--ink-soft);font-size:14px}
+  .spinner{width:17px;height:17px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;
+    border-radius:50%;display:inline-block;vertical-align:-3px;margin-right:8px;
+    animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hidden{display:none!important}
+
+  .lang{display:flex;gap:2px;background:var(--paper-dim);border-radius:100px;padding:3px;
+    border:1px solid var(--line)}
+  .lang button{border:none;background:transparent;padding:5px 12px;border-radius:100px;
+    cursor:pointer;color:var(--ink-soft);font-size:12px;font-weight:700;letter-spacing:.04em}
+  .lang button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">R</div>
+    <div>
+      <div class="brand-name">Racik</div>
+      <div class="brand-sub" data-i18n="brand.sub"></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="id">ID</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+    <div class="badge mono" id="corpusBadge">…</div>
+  </div>
+</header>
+
+<main class="app">
+
+  <!-- ============ SETUP ============ -->
+  <section id="setup">
+    <div class="setup">
+      <div class="hero">
+        <h1 data-i18n-html="hero.title"></h1>
+        <p data-i18n="hero.lede"></p>
+
+        <div class="card pad">
+          <div class="grid2">
+            <div>
+              <label class="fld" for="stage" data-i18n="f.stage"></label>
+              <select id="stage"></select>
+            </div>
+            <div>
+              <label class="fld" for="days" data-i18n="f.days"></label>
+              <select id="days"></select>
+            </div>
+            <div>
+              <label class="fld" for="portions" data-i18n="f.portions"></label>
+              <input type="number" id="portions" value="120" min="1" max="100000">
+            </div>
+            <div>
+              <label class="fld" for="province" data-i18n="f.province"></label>
+              <select id="province"></select>
+            </div>
+            <div>
+              <label class="fld" for="budget" data-i18n="f.budget"></label>
+              <input type="number" id="budget" value="10000" min="1000" step="500">
+            </div>
+            <div>
+              <label class="fld" for="share" data-i18n="f.share"></label>
+              <select id="share"></select>
+            </div>
+          </div>
+
+          <div style="margin-top:14px">
+            <label class="fld" for="exclude" data-i18n="f.exclude"></label>
+            <input type="text" id="exclude" data-i18n-ph="f.excludePh">
+            <div class="chips" id="allergyChips"></div>
+          </div>
+
+          <div style="margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <button class="btn" id="go" data-i18n="btn.go"></button>
+            <span class="hint" style="margin:0" data-i18n="hint.go"></span>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card pad" style="margin-bottom:20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+            <h3 style="font-size:17px" data-i18n="ask.title"></h3>
+            <span class="badge mono" id="orchBadge" style="font-size:10.5px">…</span>
+          </div>
+          <p style="font-size:12.5px;color:var(--ink-soft);margin:6px 0 11px;line-height:1.55"
+             data-i18n="ask.desc"></p>
+          <textarea id="askBox" rows="3" data-i18n-ph="ask.ph"
+            style="width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;
+                   font-family:inherit;font-size:14px;resize:vertical;color:var(--ink);background:var(--card)"></textarea>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn" id="askBtn" style="padding:10px 18px;font-size:14px" data-i18n="btn.ask"></button>
+            <button class="btn ghost" id="askExample" data-i18n="btn.example"></button>
+          </div>
+          <div id="askOut" class="hidden" style="margin-top:14px"></div>
+        </div>
+
+        <div class="card pad">
+          <h3 style="font-size:17px" data-i18n="basis.title"></h3>
+          <div id="stageTargets" style="margin-top:12px"></div>
+          <div class="notice" style="margin-top:16px">
+            <strong data-i18n="basis.headline"></strong>
+            <ul style="padding-left:17px;margin:7px 0 0">
+              <li data-i18n="basis.li1"></li>
+              <li data-i18n="basis.li2"></li>
+              <li data-i18n="basis.li3"></li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="result" class="hidden">
+    <div class="section-head">
+      <div>
+        <h2 id="planTitle"></h2>
+        <p id="planSub"></p>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <button class="btn ghost" id="backBtn" data-i18n="btn.back"></button>
+        <button class="btn ghost" id="reshuffleBtn" data-i18n="btn.reshuffle"></button>
+        <button class="btn ghost" id="csvBtn" data-i18n="btn.csv"></button>
+        <button class="btn ghost" id="reportBtn" data-i18n="btn.report"></button>
+      </div>
+    </div>
+
+    <div class="metrics" id="metrics"></div>
+    <div id="notes"></div>
+
+    <div class="section-head"><div><h2 data-i18n="sec.tray"></h2>
+      <p data-i18n="sec.traySub"></p></div></div>
+    <div class="tabs" id="dayTabs" role="tablist"></div>
+    <div class="tray" id="tray"></div>
+
+    <div class="section-head"><div><h2 data-i18n="sec.compliance"></h2>
+      <p id="complianceSub"></p></div></div>
+    <div class="card pad" id="compliance"></div>
+
+    <div class="section-head"><div><h2 data-i18n="sec.proc"></h2>
+      <p id="procSub"></p></div></div>
+    <div class="card pad scroll" id="procurement"></div>
+  </section>
+</main>
+
+<dialog id="dlg">
+  <div class="dlg-head">
+    <div>
+      <div class="mono" style="font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+        color:var(--leaf);font-weight:700" id="dlgSlot"></div>
+      <h3 id="dlgTitle" style="font-size:20px;margin-top:5px"></h3>
+      <div style="font-size:12.5px;color:var(--ink-soft);margin-top:4px" id="dlgMeta"></div>
+    </div>
+    <button class="x" id="dlgClose" data-i18n-aria="a11y.close">×</button>
+  </div>
+  <div class="dlg-body" id="dlgBody"></div>
+</dialog>
+
+<script>
+"use strict";
+
+/* ============================================================
+   Language. DEFAULT_LANG is the one line the packaging script
+   rewrites to produce the Indonesian and English builds; the
+   toggle and localStorage still let a user switch either way.
+   ============================================================ */
+const DEFAULT_LANG = "id";   /* BUILD:DEFAULT_LANG */
+
+const STRINGS = {
+  id: {
+    "page.title": "Racik — Perencana Menu MBG",
+    "brand.sub": "Perencana menu MBG · AKG 2019 · TKPI 2020",
+    "hero.title": "Menu bergizi,<br><em>dihitung</em> bukan ditebak.",
+    "hero.lede": "Racik menyusun menu Makan Bergizi Gratis dari korpus resep daerah, menghitung gizinya dengan Tabel Komposisi Pangan Indonesia, lalu memilih kombinasi terbaik di bawah pagu anggaran dengan pemrograman bilangan bulat (CP-SAT).",
+    "f.stage": "Jenjang penerima",
+    "f.days": "Jumlah hari",
+    "f.portions": "Jumlah porsi / hari",
+    "f.province": "Preferensi daerah",
+    "f.budget": "Pagu per porsi (Rp)",
+    "f.share": "Porsi anggaran bahan baku",
+    "f.exclude": "Alergi / pantangan (pisahkan dengan koma)",
+    "f.excludePh": "mis. udang, kacang tanah, telur",
+    "opt.days": "{n} hari",
+    "opt.daysWeek": "5 hari (Senin–Jumat)",
+    "opt.share70": "70% — bahan baku (Rp7.000)",
+    "opt.share85": "85% — bahan baku",
+    "opt.share100": "100% — seluruh pagu untuk bahan",
+    "opt.noProvince": "Tanpa preferensi (nasional)",
+    "btn.go": "Susun menu",
+    "btn.going": "Menghitung…",
+    "hint.go": "Optimasi berjalan sampai ±12 detik.",
+    "ask.title": "Tanya Racik",
+    "ask.desc": "Tulis kebutuhan Anda dalam bahasa Indonesia. Orkestrator memanggil mesin perhitungan — setiap angka berasal dari alat, bukan dari model.",
+    "ask.ph": "mis. Menu 5 hari untuk SMP di Jawa Tengah, 150 porsi, tanpa udang. Apakah pagu Rp10.000 cukup?",
+    "btn.ask": "Tanya",
+    "btn.asking": "Berpikir…",
+    "btn.example": "Contoh",
+    "basis.title": "Dasar perhitungan",
+    "basis.targets": "Target per satu kali makan — {stage}",
+    "basis.headline": "Satu kali makan MBG = ±⅓ AKG harian.",
+    "basis.li1": "AKG 2019 (Permenkes 28/2019) — makro terverifikasi.",
+    "basis.li2": "Mikronutrien ditampilkan sebagai informasi, belum jadi batasan.",
+    "basis.li3": "Biaya dihitung atas berat kotor (BDD), bukan berat bersih.",
+    "btn.back": "← Ubah parameter",
+    "btn.reshuffle": "Susun ulang",
+    "btn.csv": "Unduh belanja (CSV)",
+    "btn.report": "Laporan kepatuhan (cetak/PDF)",
+    "report.building": "Menyusun laporan…",
+    "sec.tray": "Nampan harian",
+    "sec.traySub": "Klik komponen untuk melihat bahan, langkah, dan asal angkanya.",
+    "sec.compliance": "Kepatuhan gizi",
+    "sec.proc": "Kebutuhan bahan",
+    "plan.title": "Menu {days} hari — {stage}",
+    "plan.sub": "{portions} porsi/hari{province} · {candidates} kandidat dipertimbangkan · solver {status} dalam {seconds}s",
+    "plan.province": " · preferensi {province}",
+    "m.cost": "Biaya bahan / porsi",
+    "m.costSub": "pagu bahan {budget}",
+    "m.adequacy": "Pemenuhan AKG",
+    "m.adequacySub": "rata-rata target makro",
+    "m.total": "Total / hari",
+    "m.totalSub": "{portions} porsi",
+    "m.relaxed": "Batas dilonggarkan",
+    "m.relaxedSome": "lihat catatan di bawah",
+    "m.relaxedNone": "semua target tercapai",
+    "relax.title": "Batas gizi yang dilonggarkan",
+    "relax.desc": "Solver selalu mengembalikan menu. Bila pagu tidak cukup untuk memenuhi seluruh batas bawah AKG, kekurangannya dilaporkan di sini — bukan disembunyikan.",
+    "relax.day": "Hari",
+    "relax.nutrient": "Zat gizi",
+    "relax.short": "Kurang",
+    "relax.target": "Target",
+    "relax.gap": "Selisih",
+    "notes.title": "Catatan metodologi & keterbatasan",
+    "tray.empty": "Tidak terisi",
+    "tray.protein": "g protein",
+    "compliance.sub": "{day} · target {stage} · ±⅓ AKG harian",
+    "compliance.advisoryTitle": "AKG mikronutrien belum diverifikasi terhadap PDF Permenkes 28/2019",
+    "compliance.footnote": "Baris bertanda INFO tidak dijadikan batasan optimasi — nilai mikronutrien AKG 2019 masih berbeda antar sumber sekunder dan menunggu verifikasi terhadap dokumen Permenkes 28/2019 asli.",
+    "dish.meta": "{province} · {servings} porsi per resep · metode {method} · mutu data {quality} ({score})",
+    "dish.energy": "Energi",
+    "dish.kcalPer": "kkal/porsi",
+    "dish.protein": "Protein",
+    "dish.fat": "Lemak",
+    "dish.gPer": "g/porsi",
+    "dish.cost": "Biaya",
+    "dish.costPer": "per porsi",
+    "dish.ingredients": "Bahan — untuk {portions} porsi",
+    "dish.thIngredient": "Bahan",
+    "dish.thRecipe": "Resep",
+    "dish.thScaled": "Skala",
+    "dish.thCost": "Biaya",
+    "dish.thBasis": "Dasar",
+    "dish.noMatch": "tidak dipadankan ke TKPI — tanpa kontribusi gizi",
+    "dish.proxy": "pengganti",
+    "dish.steps": "Langkah",
+    "dish.basisNote": "Kolom “Dasar” menunjukkan cara gram diperoleh: exact satuan massa tertulis, volume satuan volume × densitas, piece berat butir per bahan, piece_default berat butir umum, nominal untuk “secukupnya”.",
+    "proc.loading": "Menghitung kebutuhan bahan…",
+    "proc.sub": "{items} bahan · {kg} kg · {cost} untuk {days} hari × {portions} porsi",
+    "proc.thName": "Bahan",
+    "proc.thWeight": "Berat kotor",
+    "proc.thCost": "Biaya",
+    "proc.thUsed": "Dipakai pada",
+    "proc.failed": "Gagal memuat: {error}",
+    "csv.name": "Bahan", "csv.weight": "Berat kotor (kg)", "csv.cost": "Biaya (Rp)",
+    "csv.matched": "Dipadankan TKPI", "csv.used": "Dipakai pada",
+    "csv.yes": "ya", "csv.no": "tidak",
+    "csv.file": "racik-belanja-{days}hari-{portions}porsi.csv",
+    "orch.active": "SEA-LION aktif",
+    "orch.basic": "mode dasar",
+    "orch.basicTitle": "SEALION_API_KEY belum diset — memakai perencana berbasis aturan",
+    "orch.unavailable": "status tidak tersedia",
+    "ask.calling": "Memanggil mesin perhitungan…",
+    "ask.steps": "{n} langkah · {reason}",
+    "ask.trace": "Jejak alat ({n}) — sumber setiap angka",
+    "ask.planned": "RENCANA YANG DIHITUNG",
+    "ask.failed": "Gagal: {error}",
+    "err.plan": "Gagal menyusun menu: ",
+    "err.boot": "Tidak dapat menghubungi API Racik: {error}\n\nJalankan: python -m uvicorn racik.api:app --port 8000",
+    "err.corpus": "gagal memuat data",
+    "corpus.badge": "{dishes} hidangan · {foods} pangan TKPI",
+    "a11y.close": "Tutup",
+    "slot.staple": "Makanan pokok", "slot.hewani": "Lauk hewani",
+    "slot.nabati": "Lauk nabati", "slot.sayur": "Sayur", "slot.buah": "Buah",
+    "n.energy_kcal": "Energi", "n.protein_g": "Protein", "n.fat_g": "Lemak",
+    "n.carb_g": "Karbohidrat", "n.fibre_g": "Serat",
+    "u.kcal": "kkal", "u.g": "g"
+  },
+  en: {
+    "page.title": "Racik — MBG Menu Planner",
+    "brand.sub": "MBG menu planner · AKG 2019 · TKPI 2020",
+    "hero.title": "Nutritious menus,<br><em>calculated</em> not guessed.",
+    "hero.lede": "Racik builds Makan Bergizi Gratis menus from a corpus of regional Indonesian recipes, computes their nutrition against the Indonesian Food Composition Table, then selects the best combination under the budget cap using integer programming (CP-SAT).",
+    "f.stage": "Recipient stage",
+    "f.days": "Number of days",
+    "f.portions": "Portions / day",
+    "f.province": "Regional preference",
+    "f.budget": "Budget per portion (Rp)",
+    "f.share": "Share available for ingredients",
+    "f.exclude": "Allergies / exclusions (comma separated)",
+    "f.excludePh": "e.g. shrimp, peanut, egg",
+    "opt.days": "{n} days",
+    "opt.daysWeek": "5 days (Mon–Fri)",
+    "opt.share70": "70% — ingredients (Rp7,000)",
+    "opt.share85": "85% — ingredients",
+    "opt.share100": "100% — entire budget for ingredients",
+    "opt.noProvince": "No preference (national)",
+    "btn.go": "Build menu",
+    "btn.going": "Solving…",
+    "hint.go": "Optimisation runs for up to ~12 seconds.",
+    "ask.title": "Ask Racik",
+    "ask.desc": "Describe what you need in plain language. The orchestrator calls the calculation engine — every number comes from a tool, never from the model.",
+    "ask.ph": "e.g. A 5-day menu for SMP in Central Java, 150 portions, no shrimp. Is Rp10,000 enough?",
+    "btn.ask": "Ask",
+    "btn.asking": "Thinking…",
+    "btn.example": "Example",
+    "basis.title": "Basis of calculation",
+    "basis.targets": "Per-meal target — {stage}",
+    "basis.headline": "One MBG meal ≈ ⅓ of daily AKG.",
+    "basis.li1": "AKG 2019 (Permenkes 28/2019) — macronutrients verified.",
+    "basis.li2": "Micronutrients shown for information, not yet enforced.",
+    "basis.li3": "Cost is charged on gross weight (BDD), not edible weight.",
+    "btn.back": "← Change parameters",
+    "btn.reshuffle": "Rebuild",
+    "btn.csv": "Download shopping list (CSV)",
+    "btn.report": "Compliance report (print/PDF)",
+    "report.building": "Building report…",
+    "sec.tray": "Daily tray",
+    "sec.traySub": "Click a component to see its ingredients, steps, and where the numbers came from.",
+    "sec.compliance": "Nutrient compliance",
+    "sec.proc": "Ingredient requirements",
+    "plan.title": "{days}-day menu — {stage}",
+    "plan.sub": "{portions} portions/day{province} · {candidates} candidates considered · solver {status} in {seconds}s",
+    "plan.province": " · preference {province}",
+    "m.cost": "Ingredient cost / portion",
+    "m.costSub": "ingredient budget {budget}",
+    "m.adequacy": "AKG adequacy",
+    "m.adequacySub": "mean of macro targets",
+    "m.total": "Total / day",
+    "m.totalSub": "{portions} portions",
+    "m.relaxed": "Floors relaxed",
+    "m.relaxedSome": "see notes below",
+    "m.relaxedNone": "all targets met",
+    "relax.title": "Relaxed nutrient floors",
+    "relax.desc": "The solver always returns a menu. When the budget cannot meet every AKG floor, the shortfall is reported here rather than hidden.",
+    "relax.day": "Day",
+    "relax.nutrient": "Nutrient",
+    "relax.short": "Short by",
+    "relax.target": "Target",
+    "relax.gap": "Gap",
+    "notes.title": "Methodology & limitations",
+    "tray.empty": "Not filled",
+    "tray.protein": "g protein",
+    "compliance.sub": "{day} · target {stage} · ⅓ of daily AKG",
+    "compliance.advisoryTitle": "AKG micronutrient values not yet verified against the Permenkes 28/2019 PDF",
+    "compliance.footnote": "Rows marked INFO are not used as optimisation constraints — AKG 2019 micronutrient values still disagree across secondary sources and await verification against the original Permenkes 28/2019 document.",
+    "dish.meta": "{province} · {servings} servings per recipe · method {method} · data quality {quality} ({score})",
+    "dish.energy": "Energy",
+    "dish.kcalPer": "kcal/portion",
+    "dish.protein": "Protein",
+    "dish.fat": "Fat",
+    "dish.gPer": "g/portion",
+    "dish.cost": "Cost",
+    "dish.costPer": "per portion",
+    "dish.ingredients": "Ingredients — for {portions} portions",
+    "dish.thIngredient": "Ingredient",
+    "dish.thRecipe": "Recipe",
+    "dish.thScaled": "Scaled",
+    "dish.thCost": "Cost",
+    "dish.thBasis": "Basis",
+    "dish.noMatch": "not matched to TKPI — contributes no nutrition",
+    "dish.proxy": "proxy",
+    "dish.steps": "Steps",
+    "dish.basisNote": "The “Basis” column shows how the gram figure was obtained: exact an explicit mass unit, volume a volume unit × density, piece a per-ingredient piece weight, piece_default a category fallback weight, nominal for “to taste”.",
+    "proc.loading": "Calculating ingredient requirements…",
+    "proc.sub": "{items} ingredients · {kg} kg · {cost} for {days} days × {portions} portions",
+    "proc.thName": "Ingredient",
+    "proc.thWeight": "Gross weight",
+    "proc.thCost": "Cost",
+    "proc.thUsed": "Used in",
+    "proc.failed": "Failed to load: {error}",
+    "csv.name": "Ingredient", "csv.weight": "Gross weight (kg)", "csv.cost": "Cost (Rp)",
+    "csv.matched": "Matched to TKPI", "csv.used": "Used in",
+    "csv.yes": "yes", "csv.no": "no",
+    "csv.file": "racik-shopping-{days}days-{portions}portions.csv",
+    "orch.active": "SEA-LION active",
+    "orch.basic": "basic mode",
+    "orch.basicTitle": "SEALION_API_KEY not set — using the rule-based planner",
+    "orch.unavailable": "status unavailable",
+    "ask.calling": "Calling the calculation engine…",
+    "ask.steps": "{n} steps · {reason}",
+    "ask.trace": "Tool trace ({n}) — the source of every number",
+    "ask.planned": "COMPUTED PLAN",
+    "ask.failed": "Failed: {error}",
+    "err.plan": "Could not build the menu: ",
+    "err.boot": "Cannot reach the Racik API: {error}\n\nRun: python -m uvicorn racik.api:app --port 8000",
+    "err.corpus": "failed to load data",
+    "corpus.badge": "{dishes} dishes · {foods} TKPI foods",
+    "a11y.close": "Close",
+    "slot.staple": "Staple", "slot.hewani": "Animal protein",
+    "slot.nabati": "Plant protein", "slot.sayur": "Vegetable", "slot.buah": "Fruit",
+    "n.energy_kcal": "Energy", "n.protein_g": "Protein", "n.fat_g": "Fat",
+    "n.carb_g": "Carbohydrate", "n.fibre_g": "Fibre",
+    "u.kcal": "kcal", "u.g": "g"
+  }
+};
+
+const EXAMPLES = {
+  id: [
+    "Menu 5 hari untuk SMP di Jawa Tengah, 150 porsi, tanpa udang",
+    "Apakah pagu bahan Rp7.000 cukup untuk SMA? Bandingkan dengan Rp10.000",
+    "Menu 3 hari SD 200 siswa anggaran Rp8.500 per porsi",
+    "Berapa target gizi satu kali makan untuk PAUD?",
+    "Cari lauk nabati murah di bawah Rp1.500"
+  ],
+  en: [
+    "A 5-day menu for SMP in Central Java, 150 portions, no shrimp",
+    "Is an Rp7,000 ingredient budget enough for SMA? Compare with Rp10,000",
+    "A 3-day menu for SD, 200 students, Rp8,500 per portion",
+    "What are the per-meal nutrient targets for PAUD?",
+    "Find cheap plant-protein dishes under Rp1,500"
+  ]
+};
+
+let LANG = (() => {
+  try {
+    const saved = localStorage.getItem("racik.lang");
+    if (saved && STRINGS[saved]) return saved;
+  } catch (e) { /* storage unavailable */ }
+  return STRINGS[DEFAULT_LANG] ? DEFAULT_LANG : "id";
+})();
+
+const t = (key, vars) => {
+  let s = (STRINGS[LANG] && STRINGS[LANG][key]) || STRINGS[DEFAULT_LANG][key] || key;
+  if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]);
+  return s;
+};
+const locale = () => (LANG === "id" ? "id-ID" : "en-US");
+const num = n => Number(n).toLocaleString(locale());
+
+/* ---------------- helpers ---------------- */
+const API = "";
+const rp = n => "Rp" + num(Math.round(n));
+const el = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+let META = null, PLAN = null, ACTIVE_DAY = 0, PROC = null, LAST_BODY = null, ORCH = null;
+
+function applyI18n(){
+  document.documentElement.lang = LANG;
+  document.title = t("page.title");
+  document.querySelectorAll("[data-i18n]").forEach(n =>
+    n.textContent = t(n.dataset.i18n));
+  document.querySelectorAll("[data-i18n-html]").forEach(n =>
+    n.innerHTML = t(n.dataset.i18nHtml));
+  document.querySelectorAll("[data-i18n-ph]").forEach(n =>
+    n.placeholder = t(n.dataset.i18nPh));
+  document.querySelectorAll("[data-i18n-aria]").forEach(n =>
+    n.setAttribute("aria-label", t(n.dataset.i18nAria)));
+  document.querySelectorAll(".lang button").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+}
+
+function setLang(next){
+  if(!STRINGS[next] || next === LANG) return;
+  LANG = next;
+  try { localStorage.setItem("racik.lang", next); } catch (e) { /* ignore */ }
+  applyI18n();
+  renderStaticOptions();
+  if(META) renderTargets();
+  if(META) renderCorpusBadge();
+  if(ORCH) paintOrchBadge(ORCH);
+  if(PLAN) renderPlan();
+  if(PROC) renderProcurement();
+}
+
+/* ---------------- setup ---------------- */
+function renderStaticOptions(){
+  const days = el("days"), keepDays = days.value || "5";
+  days.innerHTML = [3,5,6,7].map(n =>
+    `<option value="${n}">${n === 5 ? t("opt.daysWeek") : t("opt.days", {n})}</option>`).join("");
+  days.value = keepDays;
+
+  const share = el("share"), keepShare = share.value || "0.7";
+  share.innerHTML =
+    `<option value="0.7">${t("opt.share70")}</option>` +
+    `<option value="0.85">${t("opt.share85")}</option>` +
+    `<option value="1">${t("opt.share100")}</option>`;
+  share.value = keepShare;
+
+  if(META){
+    const prov = el("province"), keepProv = prov.value;
+    prov.innerHTML = `<option value="">${t("opt.noProvince")}</option>` +
+      META.provinces.map(p =>
+        `<option value="${esc(p.province)}" data-island="${esc(p.island)}">${esc(p.province)} (${p.dishes})</option>`).join("");
+    prov.value = keepProv || "Jawa Tengah";
+  }
+}
+
+function renderCorpusBadge(){
+  el("corpusBadge").textContent = t("corpus.badge", {
+    dishes: num(META.stats.dishes), foods: META.stats.foods});
+}
+
+async function boot(){
+  applyI18n();
+  META = await (await fetch(API + "/api/meta")).json();
+  renderCorpusBadge();
+
+  el("stage").innerHTML = META.stages
+    .map(s => `<option value="${s.key}"${s.key === "sd" ? " selected" : ""}>${esc(s.label)}</option>`).join("");
+  renderStaticOptions();
+  el("budget").value = META.budget.per_portion_idr;
+
+  ["udang","kacang tanah","telur","susu","ikan","daging sapi"].forEach(term => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = term;
+    b.setAttribute("aria-pressed", "false");
+    b.onclick = () => b.setAttribute("aria-pressed",
+      b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    el("allergyChips").appendChild(b);
+  });
+
+  el("stage").onchange = renderTargets;
+  renderTargets();
+  loadOrchestratorStatus();
+}
+
+function renderTargets(){
+  const s = META.stages.find(x => x.key === el("stage").value);
+  const rows = [["energy_kcal","u.kcal"],["protein_g","u.g"],["fat_g","u.g"],
+                ["carb_g","u.g"],["fibre_g","u.g"]];
+  el("stageTargets").innerHTML =
+    `<div style="font-size:12.5px;color:var(--ink-soft);margin-bottom:9px">
+       ${esc(t("basis.targets", {stage: s.label}))}</div>` +
+    rows.map(([k,u]) =>
+      `<div style="display:flex;justify-content:space-between;padding:6px 0;
+        border-bottom:1px solid var(--paper-dim);font-size:13.5px">
+        <span>${esc(t("n." + k))}</span>
+        <span class="mono" style="font-weight:600">${s.targets[k]} ${t(u)}</span></div>`).join("");
+}
+
+function collectBody(){
+  const terms = el("exclude").value.split(",").map(x => x.trim()).filter(Boolean);
+  document.querySelectorAll("#allergyChips .chip[aria-pressed='true']")
+    .forEach(c => terms.push(c.textContent));
+  const prov = el("province");
+  return {
+    days: +el("days").value,
+    stage: el("stage").value,
+    portions: +el("portions").value,
+    province: prov.value,
+    island: prov.selectedOptions[0]?.dataset.island || "",
+    budget_per_portion_idr: +el("budget").value,
+    ingredient_budget_share: +el("share").value,
+    exclude_terms: [...new Set(terms)],
+    max_solve_seconds: 12,
+    random_seed: 0,
+    lang: LANG
+  };
+}
+
+/* ---------------- generate ---------------- */
+async function generate(seed){
+  const btn = el("go");
+  const body = LAST_BODY = collectBody();
+  if(seed !== undefined) body.random_seed = seed;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>${esc(t("btn.going"))}`;
+  try{
+    const res = await fetch(API + "/api/plan", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(body)
+    });
+    if(!res.ok) throw new Error((await res.json()).detail || res.statusText);
+    PLAN = await res.json();
+    ACTIVE_DAY = 0;
+    el("setup").classList.add("hidden");
+    el("result").classList.remove("hidden");
+    renderPlan();
+    window.scrollTo({top: 0, behavior: "smooth"});
+    loadProcurement(body);
+  }catch(err){
+    alert(t("err.plan") + err.message);
+  }finally{
+    btn.disabled = false; btn.textContent = t("btn.go");
+  }
+}
+
+/* ---------------- render ---------------- */
+const slotLabel = slot => t("slot." + slot);
+const dayLabel = d => LANG === "id" ? d.label_id : d.label_en;
+const nutLabel = r => LANG === "id" ? r.label_id : r.label_en;
+const bandLabel = () => LANG === "id" ? PLAN.band.label_id : PLAN.band.label_en;
+
+function renderPlan(){
+  const s = PLAN.summary, body = LAST_BODY;
+  el("planTitle").textContent = t("plan.title",
+    {days: PLAN.days.length, stage: bandLabel()});
+  el("planSub").textContent = t("plan.sub", {
+    portions: num(body.portions),
+    province: body.province ? t("plan.province", {province: body.province}) : "",
+    candidates: num(s.candidates),
+    status: s.status.toLowerCase(),
+    seconds: s.solve_seconds});
+
+  const budget = s.ingredient_budget_idr;
+  const pct = Math.min(100, s.mean_cost_per_portion_idr / budget * 100);
+  const over = s.budget_overrun_idr > 0;
+  el("metrics").innerHTML = `
+    <div class="metric"><div class="k">${esc(t("m.cost"))}</div>
+      <div class="v">${rp(s.mean_cost_per_portion_idr)}</div>
+      <div class="s">${esc(t("m.costSub", {budget: rp(budget)}))}</div>
+      <div class="bar ${over ? "over" : ""}"><i style="width:${pct}%"></i></div></div>
+    <div class="metric"><div class="k">${esc(t("m.adequacy"))}</div>
+      <div class="v">${Math.round(s.mean_adequacy * 100)}%</div>
+      <div class="s">${esc(t("m.adequacySub"))}</div>
+      <div class="bar"><i style="width:${Math.min(100, s.mean_adequacy*100)}%"></i></div></div>
+    <div class="metric"><div class="k">${esc(t("m.total"))}</div>
+      <div class="v">${rp(s.mean_cost_per_portion_idr * body.portions)}</div>
+      <div class="s">${esc(t("m.totalSub", {portions: num(body.portions)}))}</div></div>
+    <div class="metric"><div class="k">${esc(t("m.relaxed"))}</div>
+      <div class="v">${s.relaxed_floors}</div>
+      <div class="s">${esc(s.relaxed_floors ? t("m.relaxedSome") : t("m.relaxedNone"))}</div></div>`;
+
+  const relaxHtml = PLAN.relaxations.length ? `
+    <div class="card pad" style="margin-bottom:14px">
+      <h3 style="font-size:16px">${esc(t("relax.title"))}</h3>
+      <p style="font-size:13px;color:var(--ink-soft);margin:5px 0 12px">${esc(t("relax.desc"))}</p>
+      <div class="scroll"><table>
+        <thead><tr><th>${esc(t("relax.day"))}</th><th>${esc(t("relax.nutrient"))}</th>
+          <th class="num">${esc(t("relax.short"))}</th><th class="num">${esc(t("relax.target"))}</th>
+          <th class="num">${esc(t("relax.gap"))}</th></tr></thead>
+        <tbody>${PLAN.relaxations.map(r => `<tr>
+          <td>${esc(PLAN.days[r.day] ? dayLabel(PLAN.days[r.day]) : t("relax.day") + " " + (r.day+1))}</td>
+          <td>${esc(nutLabel(r))}</td>
+          <td class="num">${r.shortfall} ${esc(r.unit)}</td>
+          <td class="num">${r.target} ${esc(r.unit)}</td>
+          <td class="num" style="color:var(--chili);font-weight:600">−${Math.round(r.share*100)}%</td>
+        </tr>`).join("")}</tbody></table></div>
+    </div>` : "";
+
+  el("notes").innerHTML = relaxHtml + (PLAN.notes.length
+    ? `<div class="notice"><strong>${esc(t("notes.title"))}</strong>
+        <ul>${PLAN.notes.map(n => `<li>${esc(n)}</li>`).join("")}</ul></div>` : "");
+
+  el("dayTabs").innerHTML = PLAN.days.map((d,i) => {
+    const cls = d.adequacy >= .95 ? "" : d.adequacy >= .85 ? "warn" : "bad";
+    return `<button class="tab" role="tab" data-i="${i}" aria-selected="${i===ACTIVE_DAY}">
+      <span class="dot ${cls}"></span>${esc(dayLabel(d))}
+      <span class="mono" style="font-size:11.5px;opacity:.72">${rp(d.cost_per_portion_idr)}</span></button>`;
+  }).join("");
+  el("dayTabs").querySelectorAll(".tab").forEach(tab =>
+    tab.onclick = () => { ACTIVE_DAY = +tab.dataset.i; renderPlan(); });
+
+  renderDay(PLAN.days[ACTIVE_DAY]);
+}
+
+function renderDay(day){
+  el("tray").innerHTML = Object.entries(day.slots).map(([slot, dish]) => {
+    if(!dish) return `<div class="slot" style="opacity:.55;cursor:default">
+      <div class="cat">${esc(slotLabel(slot))}</div><h4>${esc(t("tray.empty"))}</h4></div>`;
+    return `<button class="slot" data-id="${dish.dish_id}" data-slot="${slot}">
+      <div class="cat">${esc(slotLabel(slot))}
+        <span class="qbadge ${dish.quality_label}">${dish.quality_label}</span></div>
+      <h4>${esc(dish.name)}</h4>
+      <div style="font-size:12px;color:var(--ink-soft)">${esc(dish.main_food || "")}</div>
+      <div class="meta">
+        <span>${esc(dish.province)}</span>
+        <span class="mono">${rp(dish.cost_per_portion_idr)}</span>
+      </div>
+      <div class="meta" style="border:0;padding-top:0">
+        <span class="mono">${Math.round(dish.per_portion.energy_kcal)} ${esc(t("u.kcal"))}</span>
+        <span class="mono">${dish.per_portion.protein_g.toFixed(1)} ${esc(t("tray.protein"))}</span>
+      </div>
+    </button>`;
+  }).join("");
+  el("tray").querySelectorAll(".slot[data-id]").forEach(b =>
+    b.onclick = () => openDish(+b.dataset.id, b.dataset.slot));
+
+  el("complianceSub").textContent = t("compliance.sub",
+    {day: dayLabel(day), stage: bandLabel()});
+  el("compliance").innerHTML = day.compliance.map(r => {
+    const w = Math.min(100, r.pct);
+    const cls = r.pct >= 95 ? "" : r.pct >= 80 ? "short" : "bad";
+    return `<div class="nut">
+      <div class="lbl">${esc(nutLabel(r))}
+        ${r.verified ? "" : `<span class="advisory" title="${esc(t("compliance.advisoryTitle"))}">INFO</span>`}</div>
+      <div class="track"><i class="${cls}" style="width:${w}%"></i></div>
+      <div class="val">${r.value} / ${r.target} ${esc(r.unit)}</div>
+    </div>`;
+  }).join("") +
+    `<div style="font-size:12px;color:var(--ink-soft);margin-top:12px;line-height:1.55">
+      ${esc(t("compliance.footnote"))}</div>`;
+}
+
+/* ---------------- dish detail ---------------- */
+async function openDish(id, slot){
+  const dish = await (await fetch(`${API}/api/dish/${id}`)).json();
+  el("dlgSlot").textContent = slotLabel(slot) || dish.slot;
+  el("dlgTitle").textContent = dish.name;
+  el("dlgMeta").textContent = t("dish.meta", {
+    province: dish.province, servings: dish.servings, method: dish.method,
+    quality: dish.quality_label, score: dish.quality});
+
+  const scale = LAST_BODY.portions / Math.max(dish.servings, 1);
+  const rows = dish.ingredients.map(i => `
+    <tr class="${i.tkpi_code ? "" : "dim"}">
+      <td>${esc(i.raw)}<div style="font-size:11.5px;color:var(--ink-soft)">
+        ${i.tkpi_name ? esc(i.tkpi_name) + " · " + i.tkpi_code : esc(t("dish.noMatch"))}
+        ${i.match_method === "proxy" ? ` · <em>${esc(t("dish.proxy"))}</em>` : ""}</div></td>
+      <td class="num">${i.gross_g.toFixed(0)} g</td>
+      <td class="num">${(i.gross_g * scale / 1000).toFixed(2)} kg</td>
+      <td class="num">${rp(i.cost_idr * scale)}</td>
+      <td><span class="qbadge ${i.unquantified ? "medium" : "high"}">${esc(i.urt_confidence)}</span></td>
+    </tr>`).join("");
+
+  el("dlgBody").innerHTML = `
+    <div class="metrics" style="margin-top:0">
+      <div class="metric"><div class="k">${esc(t("dish.energy"))}</div>
+        <div class="v">${Math.round(dish.per_portion.energy_kcal)}</div>
+        <div class="s">${esc(t("dish.kcalPer"))}</div></div>
+      <div class="metric"><div class="k">${esc(t("dish.protein"))}</div>
+        <div class="v">${dish.per_portion.protein_g.toFixed(1)}</div>
+        <div class="s">${esc(t("dish.gPer"))}</div></div>
+      <div class="metric"><div class="k">${esc(t("dish.fat"))}</div>
+        <div class="v">${dish.per_portion.fat_g.toFixed(1)}</div>
+        <div class="s">${esc(t("dish.gPer"))}</div></div>
+      <div class="metric"><div class="k">${esc(t("dish.cost"))}</div>
+        <div class="v" style="font-size:19px">${rp(dish.cost_per_portion_idr)}</div>
+        <div class="s">${esc(t("dish.costPer"))}</div></div>
+    </div>
+    <h4 style="margin:18px 0 6px;font-size:15px">${esc(t("dish.ingredients", {portions: num(LAST_BODY.portions)}))}</h4>
+    <div class="scroll"><table>
+      <thead><tr><th>${esc(t("dish.thIngredient"))}</th><th class="num">${esc(t("dish.thRecipe"))}</th>
+        <th class="num">${esc(t("dish.thScaled"))}</th><th class="num">${esc(t("dish.thCost"))}</th>
+        <th>${esc(t("dish.thBasis"))}</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    ${dish.steps ? `<h4 style="margin:18px 0 4px;font-size:15px">${esc(t("dish.steps"))}</h4>
+      <ol class="steps">${dish.steps.split(/(?<=\.)\s+/).filter(x=>x.trim())
+        .slice(0,10).map(x=>`<li>${esc(x.trim())}</li>`).join("")}</ol>` : ""}
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-top:16px;line-height:1.55">
+      ${esc(t("dish.basisNote"))}</div>`;
+  el("dlg").showModal();
+}
+
+/* ---------------- procurement ---------------- */
+async function loadProcurement(body){
+  el("procurement").innerHTML = `<div class="empty">${esc(t("proc.loading"))}</div>`;
+  try{
+    const res = await fetch(API + "/api/procurement", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(body)
+    });
+    PROC = await res.json();
+    renderProcurement();
+  }catch(err){
+    el("procurement").innerHTML =
+      `<div class="empty">${esc(t("proc.failed", {error: err.message}))}</div>`;
+  }
+}
+
+function renderProcurement(){
+  if(!PROC) return;
+  el("procSub").textContent = t("proc.sub", {
+    items: PROC.totals.items, kg: num(PROC.totals.total_mass_kg),
+    cost: rp(PROC.totals.total_cost_idr), days: PROC.days,
+    portions: num(PROC.portions)});
+  el("procurement").innerHTML = `<table>
+    <thead><tr><th>${esc(t("proc.thName"))}</th><th class="num">${esc(t("proc.thWeight"))}</th>
+      <th class="num">${esc(t("proc.thCost"))}</th><th>${esc(t("proc.thUsed"))}</th></tr></thead>
+    <tbody>${PROC.lines.map(l => `<tr class="${l.matched ? "" : "dim"}">
+      <td>${esc(l.name)}</td>
+      <td class="num">${l.gross_kg.toFixed(2)} kg</td>
+      <td class="num">${rp(l.cost_idr)}</td>
+      <td style="font-size:11.5px;color:var(--ink-soft)">${esc(l.used_in.slice(0,3).join(", "))}${l.used_in.length>3?` +${l.used_in.length-3}`:""}</td>
+    </tr>`).join("")}</tbody></table>`;
+}
+
+function downloadCsv(){
+  if(!PROC) return;
+  const rows = [[t("csv.name"),t("csv.weight"),t("csv.cost"),t("csv.matched"),t("csv.used")]]
+    .concat(PROC.lines.map(l => [l.name, l.gross_kg.toFixed(3), Math.round(l.cost_idr),
+      l.matched ? t("csv.yes") : t("csv.no"), l.used_in.join("; ")]));
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const url = URL.createObjectURL(new Blob(["﻿" + csv], {type:"text/csv;charset=utf-8"}));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = t("csv.file", {days: PROC.days, portions: PROC.portions});
+  a.click(); URL.revokeObjectURL(url);
+}
+
+/* ---------------- ask (SEA-LION orchestrator) ---------------- */
+function paintOrchBadge(s){
+  const b = el("orchBadge");
+  b.textContent = s.mode === "sealion" ? t("orch.active") : t("orch.basic");
+  b.title = s.mode === "sealion" ? `${s.model} — ${s.note}` : t("orch.basicTitle");
+  if(s.mode === "sealion"){
+    b.style.background = "#E4EFE7"; b.style.color = "var(--leaf-dark)";
+    b.style.borderColor = "var(--leaf)";
+  }
+}
+
+async function loadOrchestratorStatus(){
+  try{
+    ORCH = await (await fetch(API + "/api/orchestrator")).json();
+    paintOrchBadge(ORCH);
+  }catch(err){ el("orchBadge").textContent = t("orch.unavailable"); }
+}
+
+async function ask(){
+  const q = el("askBox").value.trim();
+  if(!q) return;
+  const btn = el("askBtn"), out = el("askOut");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>${esc(t("btn.asking"))}`;
+  out.classList.remove("hidden");
+  out.innerHTML = `<div class="empty" style="padding:18px">${esc(t("ask.calling"))}</div>`;
+  try{
+    const res = await fetch(API + "/api/ask", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({question: q, lang: LANG})
+    });
+    if(!res.ok) throw new Error((await res.json()).detail || res.statusText);
+    renderAnswer(await res.json());
+  }catch(err){
+    out.innerHTML = `<div class="notice">${esc(t("ask.failed", {error: err.message}))}</div>`;
+  }finally{
+    btn.disabled = false; btn.textContent = t("btn.ask");
+  }
+}
+
+function renderAnswer(d){
+  const modeTag = d.mode === "sealion"
+    ? `<span class="qbadge high">${esc(d.model.split("/").pop())}</span>`
+    : `<span class="qbadge medium">${esc(t("orch.basic"))}</span>`;
+  const tools = d.trace.length
+    ? `<details style="margin-top:12px">
+         <summary style="cursor:pointer;font-size:12.5px;color:var(--ink-soft);font-weight:600">
+           ${esc(t("ask.trace", {n: d.trace.length}))}</summary>
+         <div style="margin-top:8px">${d.trace.map(x => `
+           <div style="border-left:2.5px solid var(--line);padding:5px 0 5px 10px;margin-bottom:7px">
+             <div class="mono" style="font-size:11.5px;font-weight:700">${esc(x.tool)}
+               <span style="font-weight:400;color:var(--ink-soft)">${x.seconds}s</span></div>
+             <div class="mono" style="font-size:10.5px;color:var(--ink-soft);word-break:break-all">
+               ${esc(JSON.stringify(x.arguments))}</div>
+           </div>`).join("")}</div>
+       </details>` : "";
+
+  // In fallback mode the answer text already *is* the rendered plan, so the
+  // structured block would just repeat it.
+  const plan = (d.mode === "sealion" && d.plan && d.plan.days) ? `
+    <div style="margin-top:12px;border-top:1px dashed var(--line);padding-top:11px">
+      <div style="font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:7px">
+        ${esc(t("ask.planned"))}</div>
+      ${d.plan.days.map(day => `
+        <div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--paper-dim)">
+          <span class="mono" style="font-weight:700">${LANG === "id" ? "H" : "D"}${day.day}</span>
+          <span class="mono" style="color:var(--ink-soft)"> ${rp(day.cost_per_portion_idr)}
+            · ${day.energy_kcal} ${esc(t("u.kcal"))} · AKG ${Math.round(day.adequacy*100)}%</span>
+          <div style="color:var(--ink-soft);margin-top:2px">
+            ${esc(Object.values(day.dishes).filter(Boolean).join(" · "))}</div>
+        </div>`).join("")}
+    </div>` : "";
+
+  el("askOut").innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">${modeTag}
+      <span style="font-size:11.5px;color:var(--ink-soft)">${esc(t("ask.steps", {n: d.steps, reason: d.stopped_because}))}</span></div>
+    <div style="font-size:13.5px;line-height:1.65;white-space:pre-wrap">${esc(d.answer)}</div>
+    ${plan}${tools}`;
+}
+
+/* ---------------- wiring ---------------- */
+document.querySelectorAll(".lang button").forEach(b =>
+  b.onclick = () => setLang(b.dataset.lang));
+el("askBtn").onclick = ask;
+el("askExample").onclick = () => {
+  const list = EXAMPLES[LANG] || EXAMPLES.id;
+  el("askBox").value = list[Math.floor(Math.random() * list.length)];
+};
+el("askBox").addEventListener("keydown", e => {
+  if((e.metaKey || e.ctrlKey) && e.key === "Enter") ask();
+});
+el("go").onclick = () => generate();
+el("reshuffleBtn").onclick = () => generate(Math.floor(Math.random() * 100000));
+el("backBtn").onclick = () => {
+  el("result").classList.add("hidden");
+  el("setup").classList.remove("hidden");
+  window.scrollTo({top: 0, behavior: "smooth"});
+};
+el("csvBtn").onclick = downloadCsv;
+el("reportBtn").onclick = async () => {
+  const btn = el("reportBtn"), label = btn.textContent;
+  btn.disabled = true; btn.textContent = t("report.building");
+  try{
+    const res = await fetch(API + "/api/report", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({...LAST_BODY, lang: LANG})
+    });
+    if(!res.ok) throw new Error(res.statusText);
+    // Open in a tab so the operator can print straight to PDF; if the popup is
+    // blocked, fall back to downloading the same file.
+    const url = URL.createObjectURL(new Blob([await res.text()], {type:"text/html"}));
+    const win = window.open(url, "_blank");
+    if(!win){
+      const a = document.createElement("a");
+      a.href = url; a.download = `racik-laporan-${LAST_BODY.days}h.html`; a.click();
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }catch(err){
+    alert(t("ask.failed", {error: err.message}));
+  }finally{
+    btn.disabled = false; btn.textContent = label;
+  }
+};
+el("dlgClose").onclick = () => el("dlg").close();
+el("dlg").onclick = e => { if(e.target === el("dlg")) el("dlg").close(); };
+
+boot().catch(err => {
+  el("corpusBadge").textContent = t("err.corpus");
+  alert(t("err.boot", {error: err.message}));
+});
+</script>
+</body>
+</html>
